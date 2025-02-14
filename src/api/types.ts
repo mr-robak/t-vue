@@ -1,53 +1,74 @@
 export interface Show {
-  _links: Links
-  averageRuntime: number
-  dvdCountry: string
-  ended?: string
-  externals: Externals
-  genres: string[]
   id: number
-  image: Image
-  language: string
-  name: string
-  network?: Network
-  officialSite?: string
-  premiered: string
-  rating: Rating
-  runtime?: number
-  schedule: Schedule
-  status: string
-  summary: string
-  type: string
-  updated: number
   url: string
-  webChannel?: WebChannel
+  name: string
+  type: string
+  language?: string
+  genres: string[]
+  status: string
+  runtime?: number
+  averageRuntime?: number
+  premiered?: string
+  ended?: string
+  officialSite?: string
+  schedule: Schedule
+  rating: Rating
   weight: number
+  network?: Network
+  webChannel?: WebChannel
+  dvdCountry?: DvdCountry
+  externals: Externals
+  image?: Image
+  summary?: string
+  updated: number
+  _links: Links
 }
 
-export interface Links {
-  previousepisode: Previousepisode
-  self: Self
-  nextepisode?: Nextepisode
+export interface Schedule {
+  time: string
+  days: string[]
 }
 
-export interface Previousepisode {
-  href: string
+export interface Rating {
+  average?: number
+}
+
+export interface Network {
+  id: number
   name: string
+  country: Country
+  officialSite?: string
 }
 
-export interface Self {
-  href: string
-}
-
-export interface Nextepisode {
-  href: string
+export interface Country {
   name: string
+  code: string
+  timezone: string
+}
+
+export interface WebChannel {
+  id: number
+  name: string
+  country?: Country2
+  officialSite?: string
+}
+
+export interface Country2 {
+  name: string
+  code: string
+  timezone: string
+}
+
+export interface DvdCountry {
+  name: string
+  code: string
+  timezone: string
 }
 
 export interface Externals {
-  imdb?: string
+  tvrage?: number
   thetvdb?: number
-  tvrage: number
+  imdb?: string
 }
 
 export interface Image {
@@ -55,37 +76,22 @@ export interface Image {
   original: string
 }
 
-export interface Network {
-  country: Country
-  id: number
+export interface Links {
+  self: Self
+  previousepisode?: Previousepisode
+  nextepisode?: Nextepisode
+}
+
+export interface Self {
+  href: string
+}
+
+export interface Previousepisode {
+  href: string
   name: string
-  officialSite?: string
 }
 
-export interface Country {
-  code: string
+export interface Nextepisode {
+  href: string
   name: string
-  timezone: string
-}
-
-export interface Rating {
-  average?: number
-}
-
-export interface Schedule {
-  days: string[]
-  time: string
-}
-
-export interface WebChannel {
-  country: Country2
-  id: number
-  name: string
-  officialSite: string
-}
-
-export interface Country2 {
-  code: string
-  name: string
-  timezone: string
 }
