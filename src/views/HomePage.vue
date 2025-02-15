@@ -18,9 +18,11 @@ onMounted(async () => {
     <div v-else>
       <h1>TV Shows</h1>
       <div>
-        <p>Total genres: {{ Object.keys(store.genres) }}</p>
+        <p>Genres: {{ Object.keys(store.genres) }}</p>
       </div>
-      <ShowsList key="Action" genre="Action" />
+      <ShowsList key="Science-Fiction" genre="Science-Fiction" />
+      <ShowsList key="DIY" genre="DIY" />
+      <!-- <ShowsList key="Drama" genre="Drama" /> -->
     </div>
   </div>
 </template>

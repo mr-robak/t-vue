@@ -25,6 +25,7 @@ export const showsModule = {
   getGenresMap(shows: Show[]): GenresMap {
     const genresMap: GenresMap = {}
 
+    // TODO: sort shows by rating
     shows.forEach((show) => {
       show.genres.forEach((genre) => {
         if (!genresMap[genre]) genresMap[genre] = []
