@@ -2,6 +2,9 @@
 
 body {
   background: $gradient-background;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
   color: $color-text;
   font-family: $font-family-base;
 }
