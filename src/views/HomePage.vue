@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import type { Show } from '@/api/types'
-import { fetchAllShows } from '@/api/api'
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
+import { showsModule } from '@/modules/index'
+import { useStore } from '@/store'
 
-const shows = ref<Show[]>([])
+const store = useStore()
 
 onMounted(async () => {
-  shows.value = await fetchAllShows()
+  await showsModule.fetchShows()
 })
 </script>
 
 <template>
   <div>
-    <h1>TVue Dashboard</h1>
-    <div v-if="shows.length">
-      <p>{{ shows.length }}</p>
-      <ul>
-        <li v-for="show in shows" :key="show.id">
-          {{ show.name }}
-        </li>
-      </ul>
-    </div>
+    <div v-if="store.isLoading">Loading shows...</div>
+    <div v-else-if="store.error">{{ store.error }}</div>
     <div v-else>
-      <p>Loading...</p>
+      <h1>TV Shows</h1>
+      <div>
+        <p>Total shows: {{ store.shows.length }}</p>
+      </div>
     </div>
   </div>
 </template>
