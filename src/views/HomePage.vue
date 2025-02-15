@@ -17,7 +17,7 @@ onMounted(async () => {
     <div v-else>
       <h1>TV Shows</h1>
       <div>
-        <p>Total shows: {{ store.shows.length }}</p>
+        <p>Total genres: {{ Object.keys(store.genres).length }}</p>
       </div>
     </div>
   </div>

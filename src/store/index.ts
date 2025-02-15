@@ -1,17 +1,16 @@
 import { defineStore } from 'pinia'
-import type { Show } from '@/api/types'
-import type { StoreState } from './types'
+import type { StoreState, GenresMap } from './types'
 
-export const useStore = defineStore('shows', {
+export const useStore = defineStore('store', {
   state: (): StoreState => ({
-    shows: [],
+    genres: {},
     isLoading: false,
     error: null,
   }),
 
   actions: {
-    setShows(shows: Show[]) {
-      this.shows = shows
+    setGenres(genres: GenresMap) {
+      this.genres = genres
     },
     setLoading(loading: boolean) {
       this.isLoading = loading
