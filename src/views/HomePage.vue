@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import GenreShowList from '@/components/GenreShowList.vue'
 import { showsModule } from '@/modules/index'
 import { useStore } from '@/store'
 
@@ -17,8 +18,9 @@ onMounted(async () => {
     <div v-else>
       <h1>TV Shows</h1>
       <div>
-        <p>Total genres: {{ Object.keys(store.genres).length }}</p>
+        <p>Total genres: {{ Object.keys(store.genres) }}</p>
       </div>
+      <GenreShowList key="Action" genre="Action" />
     </div>
   </div>
 </template>

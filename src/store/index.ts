@@ -7,7 +7,6 @@ export const useStore = defineStore('store', {
     isLoading: false,
     error: null,
   }),
-
   actions: {
     setGenres(genres: GenresMap) {
       this.genres = genres
@@ -19,5 +18,9 @@ export const useStore = defineStore('store', {
       this.error = error
     },
   },
-  getters: {},
+  getters: {
+    showsByGenre: (state) => {
+      return (genre: string) => state.genres[genre] || []
+    },
+  },
 })
