@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import GenreShowList from '@/components/GenreShowList.vue'
+import ShowsList from '@/components/ShowsList.vue'
 import { showsModule } from '@/modules/index'
 import { useStore } from '@/store'
 
@@ -20,7 +20,7 @@ onMounted(async () => {
       <div>
         <p>Total genres: {{ Object.keys(store.genres) }}</p>
       </div>
-      <GenreShowList key="Action" genre="Action" />
+      <ShowsList key="Action" genre="Action" />
     </div>
   </div>
 </template>
