@@ -47,8 +47,6 @@ function scrollRight() {
 </template>
 
 <style scoped lang="scss">
-@import '@/assets/styles/_variables';
-
 .cards-container-wrapper {
   position: relative;
   padding-top: 2rem;
