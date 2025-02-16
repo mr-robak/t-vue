@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import { useStore } from '@/store'
 import ShowCard from './ShowCard.vue'
+import { PhCaretLeft, PhCaretRight } from '@phosphor-icons/vue' // Only these two icons will be bundled
 
 // TODO: refactor to be more generic
 
@@ -29,11 +30,14 @@ function scrollRight() {
       <div class="cards-container-wrapper">
         <!-- TODO: show scroll buttons only if content overflows  -->
         <div class="scroll-buttons">
-          <button class="scroll-button" @click="scrollLeft">&lt;</button>
-          <button class="scroll-button" @click="scrollRight">&gt;</button>
+          <button class="scroll-button" @click="scrollLeft">
+            <PhCaretLeft :size="24" />
+          </button>
+          <button class="scroll-button" @click="scrollRight">
+            <PhCaretRight :size="24" />
+          </button>
         </div>
         <div class="cards-container" ref="scrollContainer">
-          <ShowCard />
           <ul class="cards-list">
             <li v-for="show in MappedShows" :key="show.id">
               <ShowCard
