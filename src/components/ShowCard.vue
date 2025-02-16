@@ -45,13 +45,15 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
 @use 'sass:color';
 
 .card {
+  display: block;
+  position: relative;
   width: 200px;
   min-width: 200px;
-  border-radius: $card-border-radius;
-  border: $card-border-width solid $card-border-color;
   background-color: $card-bg-color;
-  color: $color-text;
-  transition: transform 0.4s ease;
+  border: $card-border-width solid $color-border;
+  border-radius: $card-border-radius;
+  color: $color-text-primary;
+  transition: transform 0.3s ease;
 
   &:not(.is-empty):hover {
     transform: scale(1.05);
@@ -71,21 +73,6 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
     background-position-x: 180%;
     animation: shine 1.5s linear infinite;
   }
-
-  &.has-image {
-    .card-content {
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    &:not(.is-empty):hover .card-content {
-      opacity: 1;
-    }
-  }
-
-  &:not(.has-image) .card-content {
-    opacity: 1;
-  }
 }
 
 .card-wrapper {
@@ -101,6 +88,7 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
   border-radius: $card-border-radius;
 
   img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -109,76 +97,92 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
 }
 
 .card-content {
+  display: flex;
   position: absolute;
   inset: 0;
-  padding: 0.75rem;
-  border-radius: $card-border-radius;
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 0.75rem;
   background: rgba(19, 41, 66, 0.658);
+  border-radius: $card-border-radius;
+  opacity: 0;
   transition: opacity 0.3s ease;
+  user-select: none;
 
   * {
-    filter: drop-shadow(0 0 32px rgba(255, 255, 255, 0.445));
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.274));
   }
+}
 
-  .top-content {
+.top-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .rating-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-
-    .rating-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .tmdb-logo {
-      height: $font-size-xsm;
-      width: auto;
-      filter: drop-shadow(0 0 2px rgba(20, 20, 20, 0.37));
-    }
-
-    .rating {
-      font-size: $font-size-sm;
-      font-weight: $font-weight-bold;
-    }
+    gap: 0.5rem;
   }
 
-  .bottom-content {
-    .year {
-      font-size: $font-size-base;
-      font-weight: $font-weight-light;
-      margin-bottom: 0.5rem;
-    }
-
-    .title {
-      font-size: $font-size-lg;
-      font-weight: $font-weight-bold;
-      margin: 0 0 0.5rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 5;
-      line-clamp: 5;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.2;
-    }
-
-    .summary {
-      font-size: $font-size-sm;
-      font-weight: $font-weight-light;
-      margin: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.4;
-    }
+  .tmdb-logo {
+    height: $font-size-xsm;
+    width: auto;
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.37));
   }
+
+  .rating {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.bottom-content {
+  .year {
+    margin-bottom: 0.5rem;
+    font-size: $font-size-base;
+    font-weight: $font-weight-regular;
+  }
+
+  .title {
+    display: -webkit-box;
+    margin: 0 0 0.5rem;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    line-height: 1.2;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .summary {
+    display: -webkit-box;
+    margin: 0;
+    font-size: $font-size-xsm;
+    font-weight: $font-weight-light;
+    line-height: 1.4;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.card.has-image {
+  .card-content {
+    opacity: 0;
+  }
+
+  &:hover .card-content {
+    opacity: 1;
+  }
+}
+
+.card:not(.has-image) .card-content {
+  opacity: 1;
 }
 
 @keyframes shine {

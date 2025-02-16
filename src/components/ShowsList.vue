@@ -2,18 +2,17 @@
 import { computed, ref } from 'vue'
 import { useStore } from '@/store'
 import ShowCard from './ShowCard.vue'
-import { PhCaretLeft, PhCaretRight } from '@phosphor-icons/vue' // Only these two icons will be bundled
-
-// TODO: refactor to be more generic
+import {
+  PhCaretLeft,
+  PhCaretRight,
+  PhArrowCircleRight,
+} from '@phosphor-icons/vue'
 
 const props = defineProps<{ genre: string }>()
-
 const store = useStore()
-
 const MappedShows = computed(() => store.showsByGenre(props.genre))
-
 const scrollContainer = ref<HTMLElement | null>(null)
-// TODO:  Refactor scroll to scroll by full set of cards
+
 function scrollLeft() {
   scrollContainer.value?.scrollBy({ left: -300, behavior: 'smooth' })
 }
@@ -24,33 +23,37 @@ function scrollRight() {
 </script>
 
 <template>
-  <div>
-    <h2>{{ props.genre }}</h2>
-    <div v-if="MappedShows.length">
-      <div class="cards-container-wrapper">
-        <!-- TODO: show scroll buttons only if content overflows  -->
-        <div class="scroll-buttons">
-          <button class="scroll-button" @click="scrollLeft">
-            <PhCaretLeft :size="24" />
-          </button>
-          <button class="scroll-button" @click="scrollRight">
-            <PhCaretRight :size="24" />
-          </button>
-        </div>
-        <div class="cards-container" ref="scrollContainer">
-          <ul class="cards-list">
-            <li v-for="show in MappedShows" :key="show.id">
-              <ShowCard
-                :name="show.name"
-                :summary="show.summary"
-                :image="show.image"
-                :year="show.year"
-                :rating="show.rating"
-              />
-            </li>
-          </ul>
-        </div>
+  <div class="genre-section">
+    <div class="genre-header">
+      <div class="genre-title">
+        <h2>{{ props.genre }}</h2>
+        <PhArrowCircleRight :size="32" />
       </div>
+      <div class="scroll-buttons">
+        <button class="scroll-button" @click="scrollLeft">
+          <PhCaretLeft :size="32" />
+        </button>
+        <button class="scroll-button" @click="scrollRight">
+          <PhCaretRight :size="32" />
+        </button>
+      </div>
+    </div>
+    <div
+      v-if="MappedShows.length"
+      class="cards-container"
+      ref="scrollContainer"
+    >
+      <ul class="cards-list">
+        <li v-for="show in MappedShows" :key="show.id">
+          <ShowCard
+            :name="show.name"
+            :summary="show.summary"
+            :image="show.image"
+            :year="show.year"
+            :rating="show.rating"
+          />
+        </li>
+      </ul>
     </div>
     <div v-else>
       <p>No shows available for this genre.</p>
@@ -59,34 +62,63 @@ function scrollRight() {
 </template>
 
 <style scoped lang="scss">
-.cards-container-wrapper {
+.genre-section {
+  display: block;
+  background: transparent;
+}
+
+.genre-header {
+  display: flex;
   position: relative;
-  padding-top: 2rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-top: 0.5rem;
+  padding-left: 1rem;
+}
+
+.genre-title {
+  display: flex;
+  position: relative;
+  align-items: center;
+  gap: 0.5rem;
+
+  h2 {
+    margin: 0;
+  }
 }
 
 .scroll-buttons {
-  position: absolute;
-  top: 0;
-  right: 0.5rem;
   display: flex;
+  position: relative;
   gap: 0.25rem;
-  z-index: 1;
 }
 
 .scroll-button {
-  background-color: $card-bg-color;
-  color: white;
+  display: flex;
+  position: relative;
+  align-items: center;
+  background: transparent;
   border: none;
+  padding: 0.25rem;
+  color: $color-text-secondary;
   cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  font-size: 1.25rem;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-text-primary;
+  }
 }
 
 .cards-container {
+  display: block;
+  position: relative;
   overflow-x: auto;
-  padding-bottom: 1rem;
+  padding: 0.5rem 0 0.5rem 1rem;
+  scroll-padding-left: 1rem;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -94,9 +126,19 @@ function scrollRight() {
 
 .cards-list {
   display: flex;
+  position: relative;
   gap: 1rem;
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0 1rem 0 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    z-index: 0;
+
+    &:hover {
+      z-index: 1;
+    }
+  }
 }
 </style>
