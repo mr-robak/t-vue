@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useStore } from '@/store'
+import ShowCard from './ShowCard.vue'
+
+// TODO: refactor to be more generic
 
 const props = defineProps<{ genre: string }>()
 
@@ -9,7 +12,7 @@ const store = useStore()
 const MappedShows = computed(() => store.showsByGenre(props.genre))
 
 const scrollContainer = ref<HTMLElement | null>(null)
-
+// TODO:  Refactor scroll to scroll by full set of cards
 function scrollLeft() {
   scrollContainer.value?.scrollBy({ left: -300, behavior: 'smooth' })
 }
@@ -24,18 +27,15 @@ function scrollRight() {
     <h2>{{ props.genre }}</h2>
     <div v-if="MappedShows.length">
       <div class="cards-container-wrapper">
+        <!-- TODO: show scroll buttons only if content overflows  -->
         <div class="scroll-buttons">
           <button class="scroll-button" @click="scrollLeft">&lt;</button>
           <button class="scroll-button" @click="scrollRight">&gt;</button>
         </div>
         <div class="cards-container" ref="scrollContainer">
           <ul class="cards-list">
-            <li class="card" v-for="show in MappedShows" :key="show.id">
-              <img v-if="show.image" :src="show.image" :alt="show.name" />
-              <div class="card-content">
-                <h3>{{ show.name }}</h3>
-                <p>{{ show.rating }}</p>
-              </div>
+            <li v-for="show in MappedShows" :key="show.id">
+              <ShowCard :show="show" />
             </li>
           </ul>
         </div>
@@ -87,20 +87,5 @@ function scrollRight() {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.card {
-  border-radius: $card-border-radius;
-  background-color: $card-bg-color;
-  color: #ffffff;
-  flex: 0 0 auto;
-  padding: 1rem;
-}
-
-.card img {
-  max-width: 100%;
-  border-radius: $card-border-radius;
-  display: block;
-  margin-bottom: 0.5rem;
 }
 </style>
