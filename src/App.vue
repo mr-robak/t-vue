@@ -10,5 +10,3 @@
     </template>
   </Suspense>
 </template>
-
-<style scoped></style>

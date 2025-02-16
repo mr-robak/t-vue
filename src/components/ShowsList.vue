@@ -33,6 +33,7 @@ function scrollRight() {
           <button class="scroll-button" @click="scrollRight">&gt;</button>
         </div>
         <div class="cards-container" ref="scrollContainer">
+          <ShowCard />
           <ul class="cards-list">
             <li v-for="show in MappedShows" :key="show.id">
               <ShowCard
