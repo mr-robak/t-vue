@@ -1,7 +1,8 @@
-import type { Show } from '@/api/types'
-import type { GenresMap, MappedShow } from '@/store/types'
 import { fetchAllShows } from '@/api'
 import { useStore } from '@/store'
+import { clearHTMLTags } from '@/utilities/helpers'
+import type { Show } from '@/api/types'
+import type { GenresMap, MappedShow } from '@/store/types'
 
 export const showsModule = {
   async fetchShows() {
@@ -39,7 +40,7 @@ export const showsModule = {
           id: show.id,
           name: show.name,
           image: show.image?.medium || null,
-          summary: show.summary || null,
+          summary: clearHTMLTags(show.summary) || null,
           rating: show.rating.average || null,
           year: show.premiered ? show.premiered.split('-')[0] : null,
         })
