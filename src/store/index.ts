@@ -10,6 +10,8 @@ export const useStore = defineStore('store', {
   actions: {
     setGenres(genres: GenresMap) {
       this.genres = genres
+      // TODO: persist genres???
+      // localStorage.setItem('genres', JSON.stringify(genres))
     },
     setLoading(loading: boolean) {
       this.isLoading = loading

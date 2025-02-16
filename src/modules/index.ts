@@ -1,5 +1,5 @@
 import type { Show } from '@/api/types'
-import type { GenresMap } from '@/store/types'
+import type { GenresMap, MappedShow } from '@/store/types'
 import { fetchAllShows } from '@/api'
 import { useStore } from '@/store'
 
@@ -13,7 +13,13 @@ export const showsModule = {
 
     try {
       const shows = await fetchAllShows()
-      store.setGenres(this.getGenresMap(shows))
+      const genres = this.getGenresMap(shows)
+
+      for (const genre in genres) {
+        genres[genre] = this.sortByRating(genres[genre], 'desc')
+      }
+
+      store.setGenres(genres)
     } catch (error) {
       store.setError(
         error instanceof Error ? error.message : 'Failed to fetch shows',
@@ -25,7 +31,7 @@ export const showsModule = {
   getGenresMap(shows: Show[]): GenresMap {
     const genresMap: GenresMap = {}
 
-    // TODO: sort shows by rating
+    // TODO: improve by sorting in line here???
     shows.forEach((show) => {
       show.genres.forEach((genre) => {
         if (!genresMap[genre]) genresMap[genre] = []
@@ -35,9 +41,20 @@ export const showsModule = {
           image: show.image?.medium || null,
           summary: show.summary || null,
           rating: show.rating.average || null,
+          year: show.premiered ? show.premiered.split('-')[0] : null,
         })
       })
     })
     return genresMap
+  },
+  sortByRating(
+    shows: MappedShow[],
+    direction: 'asc' | 'desc' = 'desc',
+  ): MappedShow[] {
+    return shows.sort((a, b) => {
+      return direction === 'asc'
+        ? (a.rating || 0) - (b.rating || 0)
+        : (b.rating || 0) - (a.rating || 0)
+    })
   },
 }

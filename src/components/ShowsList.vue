@@ -6,7 +6,7 @@ const props = defineProps<{ genre: string }>()
 
 const store = useStore()
 
-const genreShows = computed(() => store.showsByGenre(props.genre))
+const MappedShows = computed(() => store.showsByGenre(props.genre))
 
 const scrollContainer = ref<HTMLElement | null>(null)
 
@@ -22,7 +22,7 @@ function scrollRight() {
 <template>
   <div>
     <h2>{{ props.genre }}</h2>
-    <div v-if="genreShows.length">
+    <div v-if="MappedShows.length">
       <div class="cards-container-wrapper">
         <div class="scroll-buttons">
           <button class="scroll-button" @click="scrollLeft">&lt;</button>
@@ -30,10 +30,11 @@ function scrollRight() {
         </div>
         <div class="cards-container" ref="scrollContainer">
           <ul class="cards-list">
-            <li class="card" v-for="show in genreShows" :key="show.id">
+            <li class="card" v-for="show in MappedShows" :key="show.id">
               <img v-if="show.image" :src="show.image" :alt="show.name" />
               <div class="card-content">
                 <h3>{{ show.name }}</h3>
+                <p>{{ show.rating }}</p>
               </div>
             </li>
           </ul>
