@@ -3,6 +3,7 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function clearHTMLTags(html: string | null | undefined): string | null {
-  if (!html) return null
+  if (html === null || html === undefined) return null
+  if (html === '') return ''
   return html.replace(/(<([^>]+)>)/gi, '').trim()
 }
