@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import type { MappedShow } from '@/store/types'
-
 defineProps<{
-  show: MappedShow
+  name?: string
+  summary?: string | null
+  image?: string | null
+  year?: string | null
+  rating?: number | null
 }>()
 </script>
 
 <template>
   <div class="card">
-    <img v-if="show.image" :src="show.image" :alt="show.name" />
+    <img v-if="image" :src="image" :alt="`Poster for the TV show: ${name}`" />
     <div class="card-content">
-      <h3>{{ show.name }}</h3>
-      <p>{{ show.rating }}</p>
+      <h3 v-if="name">{{ name }}</h3>
+      <p v-if="rating">Rating: {{ rating }}</p>
+      <p v-if="year">Year: {{ year }}</p>
+      <p v-if="summary">{{ summary }}</p>
     </div>
   </div>
 </template>

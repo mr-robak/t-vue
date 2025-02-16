@@ -35,7 +35,13 @@ function scrollRight() {
         <div class="cards-container" ref="scrollContainer">
           <ul class="cards-list">
             <li v-for="show in MappedShows" :key="show.id">
-              <ShowCard :show="show" />
+              <ShowCard
+                :name="show.name"
+                :summary="show.summary"
+                :image="show.image"
+                :year="show.year"
+                :rating="show.rating"
+              />
             </li>
           </ul>
         </div>
