@@ -15,9 +15,10 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
+    "env.d.ts",
     "src/**/*.ts",
+    "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/api/__tests__/mock_shows_all.js"
+    "src/**/*.vue"
   ]
 }
