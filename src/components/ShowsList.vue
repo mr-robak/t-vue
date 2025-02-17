@@ -112,7 +112,6 @@ function scrollRight() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
   padding: 0.5rem 0 0 1rem;
   flex-wrap: nowrap;
 
@@ -125,6 +124,7 @@ function scrollRight() {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: $color-text-secondary;
 
   h2 {
     margin: 0;
@@ -132,6 +132,16 @@ function scrollRight() {
 
     @include phone {
       font-size: 1.5rem;
+    }
+  }
+
+  svg {
+    margin-top: 0.15rem;
+    color: $color-text-primary;
+
+    :hover {
+      // TODO: add glow on hover ove r button
+      filter: drop-shadow(0 0 8px rgb(255, 255, 255));
     }
   }
 

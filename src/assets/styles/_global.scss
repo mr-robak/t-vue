@@ -1,4 +1,4 @@
-@import './_variables.scss';
+@use './_variables.scss';
 
 :root {
   @each $name, $value in $theme-colors {
