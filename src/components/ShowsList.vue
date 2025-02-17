@@ -90,10 +90,9 @@ function scrollRight() {
   margin-bottom: 0.5rem;
   padding-top: 0.5rem;
   padding-left: 1rem;
+  flex-wrap: nowrap;
 
   @include phone {
-    flex-direction: column;
-    align-items: flex-start;
     padding-left: 0.5rem;
   }
 }
@@ -128,10 +127,10 @@ function scrollRight() {
   display: flex;
   position: relative;
   gap: 0.25rem;
+  margin-left: 1rem;
 
   @include phone {
     gap: 0.5rem;
-    margin-top: 0.5rem;
   }
 }
 
@@ -181,9 +180,11 @@ function scrollRight() {
   li {
     position: relative;
     z-index: 0;
+    transition: all 0.3s ease;
 
     &:hover {
       z-index: 1;
+      transform: scale(1.05);
     }
 
     ::v-deep(.card) {

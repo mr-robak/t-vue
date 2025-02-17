@@ -9,7 +9,6 @@ const props = defineProps<{
 }>()
 
 const noContent = Object.values(props).every((prop) => !prop)
-// const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
 </script>
 
 <template>
@@ -59,11 +58,6 @@ const noContent = Object.values(props).every((prop) => !prop)
   color: $color-text-primary;
   aspect-ratio: 2 / 3;
   transition: all 0.3s ease;
-
-  &:not(.is-empty):hover {
-    transform: scale(1.05);
-    z-index: 1;
-  }
 
   &.is-empty {
     @include skeleton-loading;
@@ -145,6 +139,10 @@ const noContent = Object.values(props).every((prop) => !prop)
   .rating {
     font-size: $font-size-sm;
     font-weight: $font-weight-bold;
+
+    @include phone {
+      font-size: $font-size-xsm;
+    }
   }
 }
 
@@ -153,6 +151,11 @@ const noContent = Object.values(props).every((prop) => !prop)
     margin-bottom: 0.5rem;
     font-size: $font-size-base;
     font-weight: $font-weight-regular;
+
+    @include phone {
+      margin-bottom: 0.25rem;
+      font-size: $font-size-sm;
+    }
   }
 
   .title {
@@ -162,6 +165,11 @@ const noContent = Object.values(props).every((prop) => !prop)
     font-weight: $font-weight-bold;
     line-height: 1.2;
     @include text-clamp(3);
+
+    @include phone {
+      margin-bottom: 0.25rem;
+      font-size: $font-size-base;
+    }
   }
 
   .summary {
@@ -171,6 +179,11 @@ const noContent = Object.values(props).every((prop) => !prop)
     font-weight: $font-weight-light;
     line-height: 1.4;
     @include text-clamp(5);
+
+    @include phone {
+      font-size: $font-size-micro;
+      @include text-clamp(4);
+    }
   }
 }
 </style>
