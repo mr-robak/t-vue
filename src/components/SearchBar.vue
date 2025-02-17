@@ -14,7 +14,10 @@ const doSearch = () => {
 }
 
 watchEffect(() => {
-  if (route.name !== 'SearchShows') {
+  if (route.name === 'SearchShows') {
+    // Set query value from URL when on search page
+    query.value = (route.query.q as string) || ''
+  } else {
     query.value = ''
   }
 })
@@ -23,7 +26,7 @@ watchEffect(() => {
 <template>
   <div class="search-bar">
     <div class="search-wrapper">
-      <div class="icon left-icon">
+      <div class="icon">
         <PhMagnifyingGlass size="20" />
       </div>
       <input
@@ -33,7 +36,7 @@ watchEffect(() => {
         class="search-input"
         placeholder="Search TV Shows..."
       />
-      <div v-if="query" class="icon clear-icon" @click="query = ''">
+      <div v-if="query" class="icon" @click="query = ''">
         <PhXCircle size="20" color="var(--color-text-secondary)" />
       </div>
     </div>

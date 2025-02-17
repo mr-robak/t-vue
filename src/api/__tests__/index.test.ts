@@ -13,7 +13,7 @@ describe('API', () => {
     { id: 2, name: 'Show 2' },
   ]
 
-  const createMockResponse = (data: any, status = 200) => ({
+  const createMockResponse = (data: unknown, status = 200) => ({
     status,
     json: () => Promise.resolve(data),
   })
@@ -28,7 +28,7 @@ describe('API', () => {
   })
 
   describe('fetchAllShows', () => {
-    const setupFetchMock = (...responses: any[]) => {
+    const setupFetchMock = (...responses: unknown[]) => {
       const mockFetch = vi.fn()
       responses.forEach((response) => {
         mockFetch.mockImplementationOnce(() => Promise.resolve(response))

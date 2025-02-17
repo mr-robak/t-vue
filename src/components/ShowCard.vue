@@ -95,7 +95,7 @@ const noContent = Object.values(props).every((prop) => !prop)
   flex-direction: column;
   justify-content: space-between;
   padding: 0.75rem;
-  background: $card-bg-color;
+  background: rgba(0, 0, 0, 0.7);
   border-radius: $card-border-radius;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -132,7 +132,7 @@ const noContent = Object.values(props).every((prop) => !prop)
 
   .tmdb-logo {
     height: $font-size-xsm;
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.37));
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 
     @include phone {
       font-size: 1rem;
