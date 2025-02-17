@@ -77,8 +77,47 @@ header {
 }
 
 .results-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
   gap: 1rem;
+
+  @include tablet {
+    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+  }
+
+  @include phone {
+    grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));
+  }
+}
+
+:deep(.card) {
+  width: 100%;
+  min-width: unset;
+
+  @include tablet {
+    width: 100%;
+    min-width: unset;
+  }
+
+  @include phone {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .card-wrapper {
+    aspect-ratio: 2/3;
+    height: auto;
+    width: 100%;
+
+    @include tablet {
+      aspect-ratio: 2/3;
+      height: auto;
+    }
+
+    @include phone {
+      aspect-ratio: 2/3;
+      height: auto;
+    }
+  }
 }
 </style>
