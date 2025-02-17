@@ -1,0 +1,53 @@
+@use 'sass:color';
+@use './variables' as *;
+
+// Breakpoints
+$breakpoint-phone: 576px;
+$breakpoint-tablet: 768px;
+$breakpoint-desktop: 1200px;
+
+@mixin phone {
+  @media (max-width: $breakpoint-phone) {
+    @content;
+  }
+}
+@mixin tablet {
+  @media (min-width: ($breakpoint-phone + 1)) and (max-width: $breakpoint-tablet) {
+    @content;
+  }
+}
+@mixin desktop {
+  @media (min-width: ($breakpoint-tablet + 1)) {
+    @content;
+  }
+}
+
+// Skeleton Loading Animation
+@mixin skeleton-loading {
+  $base-color: $card-bg-color;
+  $shine-color: color.scale($base-color, $lightness: 15%);
+
+  background: linear-gradient(
+    100deg,
+    $base-color 0%,
+    $base-color 40%,
+    $shine-color 50%,
+    $base-color 60%,
+    $base-color 100%
+  );
+  background-size: 300% 100%;
+  background-position-x: 100%;
+  animation: shine 1.5s linear infinite;
+  will-change: background-position;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@keyframes shine {
+  from {
+    background-position-x: 150%;
+  }
+  to {
+    background-position-x: -50%;
+  }
+}

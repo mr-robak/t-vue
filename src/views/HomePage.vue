@@ -6,6 +6,8 @@ import { useStore } from '@/store'
 
 const store = useStore()
 
+// TODO: implement loader
+
 onMounted(async () => {
   await showsModule.fetchShows()
 })
@@ -16,15 +18,12 @@ onMounted(async () => {
     <div v-if="store.isLoading">Loading shows...</div>
     <div v-else-if="store.error">{{ store.error }}</div>
     <div v-else>
-      <h1>TV Shows</h1>
-      <div>
-        <p>Genres: {{ Object.keys(store.genres) }}</p>
-      </div>
-      <ShowsList key="Science-Fiction" genre="Science-Fiction" />
+      <h1>TV Shows -</h1>
       <ShowsList key="DIY" genre="DIY" />
+      <!-- <ShowsList key="Science-Fiction" genre="Science-Fiction" /> -->
       <!-- <ShowsList key="Drama" genre="Drama" /> -->
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss"></style>

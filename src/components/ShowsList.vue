@@ -8,6 +8,8 @@ import {
   PhArrowCircleRight,
 } from '@phosphor-icons/vue'
 
+// TODO:  implement loader that shows skeleton
+
 const props = defineProps<{ genre: string }>()
 const store = useStore()
 const MappedShows = computed(() => store.showsByGenre(props.genre))
@@ -27,7 +29,7 @@ function scrollRight() {
     <div class="genre-header">
       <div class="genre-title">
         <h2>{{ props.genre }}</h2>
-        <PhArrowCircleRight :size="32" />
+        <PhArrowCircleRight :size="28" />
       </div>
       <div class="scroll-buttons">
         <button class="scroll-button" @click="scrollLeft">
@@ -62,6 +64,8 @@ function scrollRight() {
 </template>
 
 <style scoped lang="scss">
+@use '@/assets/styles/_mixins' as *;
+
 .genre-section {
   display: block;
   background: transparent;
@@ -75,6 +79,12 @@ function scrollRight() {
   margin-bottom: 0.5rem;
   padding-top: 0.5rem;
   padding-left: 1rem;
+
+  @include phone {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 0.5rem;
+  }
 }
 
 .genre-title {
@@ -85,6 +95,11 @@ function scrollRight() {
 
   h2 {
     margin: 0;
+    font-size: 1.75rem;
+
+    @include phone {
+      font-size: 1.5rem;
+    }
   }
 }
 
@@ -92,6 +107,11 @@ function scrollRight() {
   display: flex;
   position: relative;
   gap: 0.25rem;
+
+  @include phone {
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
 }
 
 .scroll-button {
@@ -122,6 +142,11 @@ function scrollRight() {
   &::-webkit-scrollbar {
     display: none;
   }
+
+  @include phone {
+    padding: 0.5rem 0 0.5rem 0.5rem;
+    scroll-padding-left: 0.5rem;
+  }
 }
 
 .cards-list {
@@ -139,6 +164,38 @@ function scrollRight() {
     &:hover {
       z-index: 1;
     }
+
+    ::v-deep(.card) {
+      width: 200px;
+      min-width: 200px;
+
+      & .card-wrapper {
+        height: 300px;
+      }
+
+      @include tablet {
+        width: 170px;
+        min-width: 170px;
+
+        & .card-wrapper {
+          height: 255px;
+        }
+      }
+
+      @include phone {
+        width: 120px;
+        min-width: 120px;
+
+        & .card-wrapper {
+          height: 180px;
+        }
+      }
+    }
+  }
+
+  @include phone {
+    gap: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 </style>
