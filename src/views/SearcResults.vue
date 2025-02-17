@@ -40,14 +40,19 @@ watch(() => route.query.q, executeSearch)
     </header>
     <div v-if="loading">Loading...</div>
     <div v-else-if="results.length" class="results-grid">
-      <ShowCard
+      <router-link
         v-for="result in results"
         :key="result.show.id"
-        :name="result.show.name"
-        :summary="clearHTMLTags(result.show.summary)"
-        :image="result.show.image?.medium"
-        :rating="result.show.rating.average"
-      />
+        :to="{ name: 'ShowDetails', params: { id: result.show.id } }"
+      >
+        <ShowCard
+          :key="result.show.id"
+          :name="result.show.name"
+          :summary="clearHTMLTags(result.show.summary)"
+          :image="result.show.image?.medium"
+          :rating="result.show.rating.average"
+        />
+      </router-link>
     </div>
     <div v-else>No results found.</div>
   </div>
@@ -55,7 +60,7 @@ watch(() => route.query.q, executeSearch)
 
 <style scoped lang="scss">
 .search-results {
-  padding: 1rem;
+  padding: 1rem 1.5rem;
 }
 
 header {
