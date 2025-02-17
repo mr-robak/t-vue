@@ -33,7 +33,7 @@ function scrollRight() {
     <div class="genre-header">
       <div class="genre-title" :class="{ 'is-skeleton': !MappedShows.length }">
         <h2>{{ MappedShows.length ? props.genre : '' }}</h2>
-        <PhArrowCircleRight :size="28" v-if="MappedShows.length" />
+        <PhArrowCircleRight v-if="MappedShows.length" :size="28" />
       </div>
       <div
         v-if="showScrollButtons && MappedShows.length"
@@ -108,7 +108,7 @@ function scrollRight() {
     h2 {
       width: 150px;
       height: 2rem;
-      background: $card-bg-color;
+      background-color: $card-bg-color;
       border-radius: 4px;
       @include skeleton-loading;
     }
