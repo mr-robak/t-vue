@@ -1,4 +1,4 @@
-import { fetchAllShows } from '../index'
+import { fetchAllShows, fetchShowDetails } from '../index'
 import * as helpers from '@/utilities/helpers'
 import { API } from '@/assets/constants'
 import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest'
@@ -80,6 +80,40 @@ describe('API', () => {
 
       expect(result).toEqual([])
       expect(global.fetch).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('fetchShowDetails', () => {
+    it('should fetch show details successfully', async () => {
+      const mockShow = { id: 1, name: 'Show 1', cast: ['Actor A'] }
+      const mockResponse = {
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockShow),
+      }
+      global.fetch = vi.fn().mockResolvedValueOnce(mockResponse)
+
+      const result = await fetchShowDetails(mockShow.id)
+
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${API.BASE_URL}${API.ENDPOINTS.SHOWS}/${mockShow.id}?embed=cast`,
+      )
+      expect(result).toEqual(mockShow)
+    })
+
+    it('should throw error when response is not ok', async () => {
+      const mockResponse = {
+        ok: false,
+        status: 404,
+        statusText: 'Not Found',
+        json: () => Promise.resolve({}),
+      }
+      global.fetch = vi.fn().mockResolvedValueOnce(mockResponse)
+
+      await expect(fetchShowDetails(1)).rejects.toThrow(
+        `Failed to fetch show details: 404 Not Found`,
+      )
     })
   })
 })

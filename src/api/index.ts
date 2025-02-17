@@ -32,7 +32,7 @@ export async function fetchAllShows(): Promise<Show[]> {
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        throw new Error(`Failed to fetch shows: ${error.message}`)
+        throw new Error(`Failed to fetch shows: Error: ${error.message}`)
       }
       throw new Error('Failed to fetch shows: an unknown error occurred')
     }
