@@ -51,3 +51,13 @@ $breakpoint-desktop: 1200px;
     background-position-x: -50%;
   }
 }
+
+// Text clamp
+@mixin text-clamp($lines: 1) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

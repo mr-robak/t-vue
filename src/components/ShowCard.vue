@@ -159,11 +159,7 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
     line-height: 1.2;
-    -webkit-line-clamp: 5;
-    line-clamp: 5;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    @include text-clamp(5);
   }
 
   .summary {
@@ -172,11 +168,7 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
     font-size: $font-size-xsm;
     font-weight: $font-weight-light;
     line-height: 1.4;
-    -webkit-line-clamp: 5;
-    line-clamp: 5;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    @include text-clamp(5);
   }
 }
 </style>

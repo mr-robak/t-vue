@@ -66,7 +66,7 @@ function scrollRight() {
     </div>
     <div v-else class="cards-container">
       <ul class="cards-list">
-        <li v-for="n in 6" :key="`skeleton-${n}`">
+        <li v-for="n in 12" :key="`skeleton-${n}`">
           <ShowCard />
         </li>
       </ul>
@@ -108,7 +108,7 @@ function scrollRight() {
     h2 {
       width: 150px;
       height: 2rem;
-      background: $color-background;
+      background: $card-bg-color;
       border-radius: 4px;
       @include skeleton-loading;
     }
