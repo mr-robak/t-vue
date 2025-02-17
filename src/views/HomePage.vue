@@ -11,6 +11,7 @@ const genresEntries = computed(() => Object.entries(store.genres))
 // TODO: implement loader
 onMounted(async () => {
   await showsModule.fetchShows()
+  // TODO: catch errors
 })
 </script>
 

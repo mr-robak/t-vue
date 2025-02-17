@@ -82,15 +82,17 @@ function scrollRight() {
             :data-index="index"
             class="card-item"
           >
-            <div class="card-item-wrapper">
-              <ShowCard
-                :name="item.name"
-                :summary="item.summary"
-                :image="item.image"
-                :year="item.year"
-                :rating="item.rating"
-              />
-            </div>
+            <router-link :to="{ name: 'ShowDetails', params: { id: item.id } }">
+              <div class="card-item-wrapper">
+                <ShowCard
+                  :name="item.name"
+                  :summary="item.summary"
+                  :image="item.image"
+                  :year="item.year"
+                  :rating="item.rating"
+                />
+              </div>
+            </router-link>
           </DynamicScrollerItem>
         </template>
       </DynamicScroller>

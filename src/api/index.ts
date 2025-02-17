@@ -30,10 +30,25 @@ export async function fetchAllShows(): Promise<Show[]> {
         shows = [...shows, ...data]
         page++
       }
-    } catch (error) {
-      throw new Error(`Failed to fetch shows: ${error}`)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        throw new Error(`Failed to fetch shows: ${error.message}`)
+      }
+      throw new Error('Failed to fetch shows: an unknown error occurred')
     }
   }
 
   return shows
+}
+
+export async function fetchShowDetails(id: number): Promise<Show> {
+  const response = await fetch(
+    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}/${id}?embed=cast`,
+  )
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch show details: ${response.status} ${response.statusText}`,
+    )
+  }
+  return response.json()
 }

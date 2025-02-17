@@ -16,12 +16,12 @@ $font-size-base: 1rem;
 $gradient-background: linear-gradient(180deg, #2d3c50 0%, #131a29 100vh);
 
 // Typography
-$font-size-micro: 0.5rem; // 10px
-$font-size-xsm: 0.75rem; // 12px
-$font-size-sm: 0.875rem; // 14px
-$font-size-base: 1rem; // 16px
-$font-size-lg: 1.25rem; // 20px
-$font-size-xlg: 1.5rem; // 24px
+$font-size-micro: 0.5rem;
+$font-size-xsm: 0.75rem;
+$font-size-sm: 0.875rem;
+$font-size-base: 1rem;
+$font-size-lg: 1.25rem;
+$font-size-xlg: 1.5rem;
 
 $font-weight-light: 300;
 $font-weight-regular: 400;
@@ -32,3 +32,30 @@ $font-weight-bold: 700;
 $card-bg-color: #243144;
 $card-border-radius: 0.5rem;
 $card-border-width: 1px;
+
+$theme-colors: (
+  'color-background': $color-background,
+  'color-text-primary': $color-text-primary,
+  'color-text-secondary': $color-text-secondary,
+  'color-border': $color-border,
+
+  'gradient-background': $gradient-background,
+
+  'font-family-base': $font-family-base,
+
+  'font-size-micro': $font-size-micro,
+  'font-size-xsm': $font-size-xsm,
+  'font-size-sm': $font-size-sm,
+  'font-size-base': $font-size-base,
+  'font-size-lg': $font-size-lg,
+  'font-size-xlg': $font-size-xlg,
+
+  'font-weight-light': $font-weight-light,
+  'font-weight-regular': $font-weight-regular,
+  'font-weight-medium': $font-weight-medium,
+  'font-weight-bold': $font-weight-bold,
+
+  'card-bg-color': $card-bg-color,
+  'card-border-radius': $card-border-radius,
+  'card-border-width': $card-border-width,
+);

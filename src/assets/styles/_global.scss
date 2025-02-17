@@ -1,3 +1,11 @@
+@import './_variables.scss';
+
+:root {
+  @each $name, $value in $theme-colors {
+    --#{$name}: #{$value};
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
