@@ -14,6 +14,10 @@ const props = defineProps<{ genre: string }>()
 const store = useStore()
 const MappedShows = computed(() => store.showsByGenre(props.genre))
 const scrollContainer = ref<HTMLElement | null>(null)
+const showScrollButtons = computed(() => {
+  if (!scrollContainer.value) return false
+  return scrollContainer.value.scrollWidth > scrollContainer.value.clientWidth
+})
 
 function scrollLeft() {
   scrollContainer.value?.scrollBy({ left: -300, behavior: 'smooth' })
@@ -27,11 +31,14 @@ function scrollRight() {
 <template>
   <div class="genre-section">
     <div class="genre-header">
-      <div class="genre-title">
-        <h2>{{ props.genre }}</h2>
-        <PhArrowCircleRight :size="28" />
+      <div class="genre-title" :class="{ 'is-skeleton': !MappedShows.length }">
+        <h2>{{ MappedShows.length ? props.genre : '' }}</h2>
+        <PhArrowCircleRight :size="28" v-if="MappedShows.length" />
       </div>
-      <div class="scroll-buttons">
+      <div
+        v-if="showScrollButtons && MappedShows.length"
+        class="scroll-buttons"
+      >
         <button class="scroll-button" @click="scrollLeft">
           <PhCaretLeft :size="32" />
         </button>
@@ -57,8 +64,12 @@ function scrollRight() {
         </li>
       </ul>
     </div>
-    <div v-else>
-      <p>No shows available for this genre.</p>
+    <div v-else class="cards-container">
+      <ul class="cards-list">
+        <li v-for="n in 6" :key="`skeleton-${n}`">
+          <ShowCard />
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -92,6 +103,16 @@ function scrollRight() {
   position: relative;
   align-items: center;
   gap: 0.5rem;
+
+  &.is-skeleton {
+    h2 {
+      width: 150px;
+      height: 2rem;
+      background: $color-background;
+      border-radius: 4px;
+      @include skeleton-loading;
+    }
+  }
 
   h2 {
     margin: 0;

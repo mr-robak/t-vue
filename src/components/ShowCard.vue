@@ -43,17 +43,20 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
 
 <style scoped lang="scss">
 @use 'sass:color';
+@use '@/assets/styles/_mixins' as *;
 
 .card {
   display: block;
   position: relative;
   width: 200px;
   min-width: 200px;
+  max-width: 200px;
   background-color: $card-bg-color;
   border: $card-border-width solid $color-border;
   border-radius: $card-border-radius;
   color: $color-text-primary;
-  transition: transform 0.3s ease;
+  aspect-ratio: 2 / 3;
+  transition: all 0.3s ease;
 
   &:not(.is-empty):hover {
     transform: scale(1.05);
@@ -61,23 +64,15 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
   }
 
   &.is-empty {
-    background: linear-gradient(
-      100deg,
-      $card-bg-color 0%,
-      $card-bg-color 40%,
-      color.scale($card-bg-color, $lightness: 5%) 50%,
-      $card-bg-color 60%,
-      $card-bg-color 100%
-    );
-    background-size: 200% 100%;
-    background-position-x: 180%;
-    animation: shine 1.5s linear infinite;
+    @include skeleton-loading;
+    border: none;
   }
 }
 
 .card-wrapper {
   position: relative;
   height: 300px;
+  transition: all 0.3s ease;
 }
 
 .image-container {
@@ -86,14 +81,15 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
   width: 100%;
   height: 100%;
   border-radius: $card-border-radius;
+  overflow: hidden;
+}
 
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
-  }
+.image-container img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 .card-content {
@@ -112,6 +108,19 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
   * {
     filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.274));
   }
+}
+
+.card.has-image {
+  .card-content {
+    opacity: 0;
+  }
+  &:hover .card-content {
+    opacity: 1;
+  }
+}
+
+.card:not(.has-image) .card-content {
+  opacity: 1;
 }
 
 .top-content {
@@ -168,26 +177,6 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-}
-
-.card.has-image {
-  .card-content {
-    opacity: 0;
-  }
-
-  &:hover .card-content {
-    opacity: 1;
-  }
-}
-
-.card:not(.has-image) .card-content {
-  opacity: 1;
-}
-
-@keyframes shine {
-  to {
-    background-position-x: -200%;
   }
 }
 </style>
