@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchShowDetails } from '@/api'
 import { clearHTMLTags } from '@/utilities/helpers'
-import { PhArrowCircleLeft } from '@phosphor-icons/vue'
+import BackButton from '@/components/BackButton.vue'
 import type { Show } from '@/api/types'
 
 const route = useRoute()
@@ -29,18 +29,12 @@ onMounted(async () => {
 <template>
   <section v-if="show">
     <header class="header">
-      <router-link to="/">
-        <PhArrowCircleLeft :size="32" color="var(--color-text-secondary)" />
-      </router-link>
+      <BackButton />
       <h1>{{ show.name }}</h1>
     </header>
     <main>
-      <p v-if="show.summary">{{ show.summary }}</p>
-      <p v-else>No summary available.</p>
+      <p>{{ show.summary }}</p>
     </main>
-  </section>
-  <section v-else-if="error">
-    <p>Error: {{ error }}</p>
   </section>
   <section v-else>
     <p>Loading...</p>
@@ -48,7 +42,7 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss">
-header {
+.header {
   display: flex;
   align-items: center;
   gap: 1rem;

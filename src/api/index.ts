@@ -1,6 +1,6 @@
 import { sleep } from '@/utilities/helpers'
 import { API } from '@/assets/constants'
-import type { Show } from './types'
+import type { SearchResult, Show } from './types'
 
 async function fetchPage(page: number): Promise<Show[]> {
   const response = await fetch(
@@ -49,6 +49,16 @@ export async function fetchShowDetails(id: number): Promise<Show> {
     throw new Error(
       `Failed to fetch show details: ${response.status} ${response.statusText}`,
     )
+  }
+  return response.json()
+}
+
+export async function searchShows(query: string): Promise<SearchResult[]> {
+  const response = await fetch(
+    `${API.BASE_URL}${API.ENDPOINTS.SEARCH_SHOWS}?q=${encodeURIComponent(query)}`,
+  )
+  if (!response.ok) {
+    throw new Error('Search failed')
   }
   return response.json()
 }

@@ -1,4 +1,4 @@
-import { fetchAllShows, fetchShowDetails } from '../index'
+import { fetchAllShows, fetchShowDetails, searchShows } from '../index'
 import * as helpers from '@/utilities/helpers'
 import { API } from '@/assets/constants'
 import { vi, describe, beforeEach, afterEach, it, expect } from 'vitest'
@@ -114,6 +114,39 @@ describe('API', () => {
       await expect(fetchShowDetails(1)).rejects.toThrow(
         `Failed to fetch show details: 404 Not Found`,
       )
+    })
+  })
+
+  describe('searchShows', () => {
+    it('should search shows successfully', async () => {
+      const mockSearchResults = [
+        { score: 0.9, show: { id: 1, name: 'Show 1' } },
+        { score: 0.8, show: { id: 2, name: 'Show 2' } },
+      ]
+      const mockResponse = {
+        ok: true,
+        json: () => Promise.resolve(mockSearchResults),
+      }
+      global.fetch = vi.fn().mockResolvedValueOnce(mockResponse)
+
+      const query = 'test'
+      const result = await searchShows(query)
+
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+      expect(global.fetch).toHaveBeenCalledWith(
+        `${API.BASE_URL}${API.ENDPOINTS.SEARCH_SHOWS}?q=${encodeURIComponent(query)}`,
+      )
+      expect(result).toEqual(mockSearchResults)
+    })
+
+    it('should throw error when search fails', async () => {
+      const mockResponse = {
+        ok: false,
+        status: 500,
+      }
+      global.fetch = vi.fn().mockResolvedValueOnce(mockResponse)
+
+      await expect(searchShows('test')).rejects.toThrow('Search failed')
     })
   })
 })

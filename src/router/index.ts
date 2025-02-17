@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
 import ShowDetails from '@/views/ShowDetails.vue'
+import SearchResults from '@/views/SearcResults.vue'
 
 const routes = [
   {
@@ -13,9 +14,13 @@ const routes = [
     name: 'ShowDetails',
     component: ShowDetails,
   },
+  {
+    path: '/search',
+    name: 'SearchShows',
+    component: SearchResults,
+  },
   // TODO: add 404 page
   // TODO: add redirect to home page
-  // TODO: add route for search page
 ]
 
 const router = createRouter({

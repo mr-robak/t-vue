@@ -95,3 +95,8 @@ export interface Nextepisode {
   href: string
   name: string
 }
+
+export interface SearchResult {
+  score: number
+  show: Show
+}

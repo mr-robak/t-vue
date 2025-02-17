@@ -17,9 +17,6 @@ onMounted(async () => {
 
 <template>
   <section>
-    <header>
-      <h1>TV Shows</h1>
-    </header>
     <main>
       <ShowsList
         v-for="[genreName, showsList] in genresEntries"

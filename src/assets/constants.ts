@@ -3,6 +3,7 @@ export const API = {
   RATE_LIMIT_DELAY: 1100,
   ENDPOINTS: {
     SHOWS: '/shows',
+    SEARCH_SHOWS: '/search/shows',
   },
 } as const
 
