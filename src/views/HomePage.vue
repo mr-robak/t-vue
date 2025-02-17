@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { showsModule } from '@/modules/index'
 import { useStore } from '@/store'
 import ShowsList from '@/components/ShowsList.vue'
 
 const store = useStore()
+
+const genresEntries = computed(() => Object.entries(store.genres))
 
 // TODO: implement loader
 onMounted(async () => {
@@ -19,7 +21,7 @@ onMounted(async () => {
     </header>
     <main>
       <ShowsList
-        v-for="[genreName, showsList] in Object.entries(store.genres)"
+        v-for="[genreName, showsList] in genresEntries"
         :key="genreName"
         :genre="genreName"
         :shows="showsList"
