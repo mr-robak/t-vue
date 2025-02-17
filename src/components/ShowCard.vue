@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
+  id?: number
   name?: string
   summary?: string | null
   image?: string | null
@@ -8,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const noContent = Object.values(props).every((prop) => !prop)
-const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
+// const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
 </script>
 
 <template>
@@ -26,8 +27,9 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
               src="@/assets/images/tmdb-logo.svg"
               alt="TMDB Logo"
               class="tmdb-logo"
+              :key="`tmdb-logo-${id}`"
             />
-            <span class="rating">{{ ratingPercentage }}%</span>
+            <span class="rating">{{ Math.round(rating * 10) }}%</span>
           </div>
         </div>
 
@@ -159,7 +161,7 @@ const ratingPercentage = props.rating ? Math.round(props.rating * 10) : null
     font-size: $font-size-lg;
     font-weight: $font-weight-bold;
     line-height: 1.2;
-    @include text-clamp(5);
+    @include text-clamp(3);
   }
 
   .summary {
