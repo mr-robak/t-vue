@@ -1,44 +1,63 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useStore } from '@/store'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import ShowCard from './ShowCard.vue'
 import {
   PhCaretLeft,
   PhCaretRight,
   PhArrowCircleRight,
 } from '@phosphor-icons/vue'
+import type { MappedShow } from '@/store/types'
 
-// TODO:  implement loader that shows skeleton
+const props = defineProps<{
+  genre: string
+  shows: MappedShow[]
+}>()
 
-const props = defineProps<{ genre: string }>()
-const store = useStore()
-const MappedShows = computed(() => store.showsByGenre(props.genre))
-const scrollContainer = ref<HTMLElement | null>(null)
-const showScrollButtons = computed(() => {
-  if (!scrollContainer.value) return false
-  return scrollContainer.value.scrollWidth > scrollContainer.value.clientWidth
+const scrollContainer = ref<InstanceType<typeof DynamicScroller> | null>(null)
+
+const minItemSize = computed(() => {
+  const width = window.innerWidth
+  if (width <= 576) return 120 // phone: 576px breakpoint
+  if (width <= 768) return 170 // tablet: 768px breakpoint
+  return 200 // desktop
 })
 
+const MappedShowsWithSize = computed(() =>
+  props.shows.map((show) => ({
+    ...show,
+    size: minItemSize.value,
+  })),
+)
+
+function handleResize() {
+  scrollContainer.value?.$forceUpdate()
+}
+
+onMounted(() => window.addEventListener('resize', handleResize))
+onUnmounted(() => window.removeEventListener('resize', handleResize))
+
 function scrollLeft() {
-  scrollContainer.value?.scrollBy({ left: -300, behavior: 'smooth' })
+  scrollContainer.value?.$el.scrollBy({ left: -600, behavior: 'smooth' })
 }
 
 function scrollRight() {
-  scrollContainer.value?.scrollBy({ left: 300, behavior: 'smooth' })
+  scrollContainer.value?.$el.scrollBy({ left: 600, behavior: 'smooth' })
 }
 </script>
 
 <template>
   <div class="genre-section">
     <div class="genre-header">
-      <div class="genre-title" :class="{ 'is-skeleton': !MappedShows.length }">
-        <h2>{{ MappedShows.length ? props.genre : '' }}</h2>
-        <PhArrowCircleRight v-if="MappedShows.length" :size="28" />
-      </div>
       <div
-        v-if="showScrollButtons && MappedShows.length"
-        class="scroll-buttons"
+        class="genre-title"
+        :class="{ 'is-skeleton': !MappedShowsWithSize.length }"
       >
+        <h2>{{ MappedShowsWithSize.length ? props.genre : '' }}</h2>
+        <PhArrowCircleRight v-if="MappedShowsWithSize.length" :size="28" />
+      </div>
+      <div v-if="MappedShowsWithSize.length" class="scroll-buttons">
         <button class="scroll-button" @click="scrollLeft">
           <PhCaretLeft :size="32" />
         </button>
@@ -47,29 +66,34 @@ function scrollRight() {
         </button>
       </div>
     </div>
-    <div
-      v-if="MappedShows.length"
-      class="cards-container"
-      ref="scrollContainer"
-    >
-      <ul class="cards-list">
-        <li v-for="show in MappedShows" :key="show.id">
-          <ShowCard
-            :name="show.name"
-            :summary="show.summary"
-            :image="show.image"
-            :year="show.year"
-            :rating="show.rating"
-          />
-        </li>
-      </ul>
-    </div>
-    <div v-else class="cards-container">
-      <ul class="cards-list">
-        <li v-for="n in 12" :key="`skeleton-${n}`">
-          <ShowCard />
-        </li>
-      </ul>
+    <div class="cards-container" v-if="MappedShowsWithSize.length">
+      <DynamicScroller
+        ref="scrollContainer"
+        class="scroller"
+        :items="MappedShowsWithSize"
+        :min-item-size="minItemSize"
+        key-field="id"
+        direction="horizontal"
+      >
+        <template #default="{ item, index, active }">
+          <DynamicScrollerItem
+            :item="item"
+            :active="active"
+            :data-index="index"
+            class="card-item"
+          >
+            <div class="card-item-wrapper">
+              <ShowCard
+                :name="item.name"
+                :summary="item.summary"
+                :image="item.image"
+                :year="item.year"
+                :rating="item.rating"
+              />
+            </div>
+          </DynamicScrollerItem>
+        </template>
+      </DynamicScroller>
     </div>
   </div>
 </template>
@@ -84,12 +108,10 @@ function scrollRight() {
 
 .genre-header {
   display: flex;
-  position: relative;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
-  padding-top: 0.5rem;
-  padding-left: 1rem;
+  padding: 0.5rem 0 0 1rem;
   flex-wrap: nowrap;
 
   @include phone {
@@ -99,9 +121,17 @@ function scrollRight() {
 
 .genre-title {
   display: flex;
-  position: relative;
   align-items: center;
   gap: 0.5rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1.75rem;
+
+    @include phone {
+      font-size: 1.5rem;
+    }
+  }
 
   &.is-skeleton {
     h2 {
@@ -112,22 +142,12 @@ function scrollRight() {
       @include skeleton-loading;
     }
   }
-
-  h2 {
-    margin: 0;
-    font-size: 1.75rem;
-
-    @include phone {
-      font-size: 1.5rem;
-    }
-  }
 }
 
 .scroll-buttons {
   display: flex;
-  position: relative;
-  gap: 0.25rem;
   margin-left: 1rem;
+  gap: 0.25rem;
 
   @include phone {
     gap: 0.5rem;
@@ -136,7 +156,6 @@ function scrollRight() {
 
 .scroll-button {
   display: flex;
-  position: relative;
   align-items: center;
   background: transparent;
   border: none;
@@ -151,73 +170,96 @@ function scrollRight() {
 }
 
 .cards-container {
-  display: block;
   position: relative;
-  overflow-x: auto;
+  height: 320px;
+  width: 100%;
+  overflow: visible;
+
+  @include tablet {
+    height: 275px;
+  }
+
+  @include phone {
+    height: 200px;
+  }
+}
+
+.scroller {
+  height: 100%;
+  width: 100%;
   padding: 0.5rem 0 0.5rem 1rem;
-  scroll-padding-left: 1rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+
+  // Override the library item wrapper overflow
+  :deep(.vue-recycle-scroller__item-wrapper) {
+    display: flex;
+    flex-direction: row;
+    overflow: visible !important;
+  }
 
   &::-webkit-scrollbar {
     display: none;
   }
 
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
   @include phone {
     padding: 0.5rem 0 0.5rem 0.5rem;
-    scroll-padding-left: 0.5rem;
   }
 }
 
-.cards-list {
-  display: flex;
-  position: relative;
-  gap: 1rem;
-  margin: 0;
-  padding: 0 1rem 0 0;
-  list-style: none;
+.card-item {
+  flex: 0 0 auto;
+  padding-right: 1rem;
 
-  li {
-    position: relative;
-    z-index: 0;
-    transition: all 0.3s ease;
-
-    &:hover {
-      z-index: 1;
-      transform: scale(1.05);
-    }
-
-    ::v-deep(.card) {
-      width: 200px;
-      min-width: 200px;
-
-      & .card-wrapper {
-        height: 300px;
-      }
-
-      @include tablet {
-        width: 170px;
-        min-width: 170px;
-
-        & .card-wrapper {
-          height: 255px;
-        }
-      }
-
-      @include phone {
-        width: 120px;
-        min-width: 120px;
-
-        & .card-wrapper {
-          height: 180px;
-        }
-      }
-    }
+  @include tablet {
+    padding-right: 1rem;
   }
 
   @include phone {
-    gap: 0.5rem;
     padding-right: 0.5rem;
+  }
+}
+
+:deep(.card-item-wrapper) {
+  height: 100%;
+  display: flex;
+  transition: transform 0.3s ease;
+  transform-origin: center center;
+
+  &:hover {
+    z-index: 1;
+    transform: scale(1.05);
+  }
+}
+
+:deep(.card) {
+  width: 200px;
+  min-width: 200px;
+
+  @include tablet {
+    width: 170px;
+    min-width: 170px;
+  }
+
+  @include phone {
+    width: 120px;
+    min-width: 120px;
+  }
+
+  .card-wrapper {
+    height: 300px;
+
+    @include tablet {
+      height: 255px;
+    }
+
+    @include phone {
+      height: 180px;
+    }
   }
 }
 </style>

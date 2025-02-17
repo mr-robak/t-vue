@@ -1,29 +1,31 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import ShowsList from '@/components/ShowsList.vue'
 import { showsModule } from '@/modules/index'
 import { useStore } from '@/store'
+import ShowsList from '@/components/ShowsList.vue'
 
 const store = useStore()
 
 // TODO: implement loader
-
 onMounted(async () => {
   await showsModule.fetchShows()
 })
 </script>
 
 <template>
-  <div>
-    <div v-if="store.isLoading">Loading shows...</div>
-    <div v-else-if="store.error">{{ store.error }}</div>
-    <div v-else>
-      <h1>TV Shows -</h1>
-      <ShowsList key="DIY" genre="DIY" />
-      <!-- <ShowsList key="Science-Fiction" genre="Science-Fiction" /> -->
-      <!-- <ShowsList key="Drama" genre="Drama" /> -->
-    </div>
-  </div>
+  <section>
+    <header>
+      <h1>TV Shows</h1>
+    </header>
+    <main>
+      <ShowsList
+        v-for="[genreName, showsList] in Object.entries(store.genres)"
+        :key="genreName"
+        :genre="genreName"
+        :shows="showsList"
+      />
+    </main>
+  </section>
 </template>
 
 <style scoped lang="scss"></style>
