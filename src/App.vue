@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { showsModule } from '@/modules/index'
 import SearchBar from '@/components/SearchBar.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useStore } from './store'
 
 const store = useStore()
@@ -11,7 +12,6 @@ onMounted(async () => {
     await showsModule.fetchShows()
   } catch (error) {
     console.error('Failed to fetch shows:', error)
-    //TODO: error handling
   }
 })
 </script>
@@ -22,10 +22,7 @@ onMounted(async () => {
       <SearchBar />
     </header>
     <main>
-      <div v-if="store.isLoading" class="loader">
-        <!-- TODO: implement loader -->
-        Loading...
-      </div>
+      <LoadingSpinner v-if="store.isLoading" />
       <router-view v-else class="main-component" />
     </main>
   </div>

@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import BackButton from '@/components/BackButton.vue'
 import { searchShows } from '@/api'
 import GridList from '@/components/GridList.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { clearHTMLTags } from '@/utilities/helpers'
 import type { SearchResult } from '@/api/types'
 import type { MappedShow } from '@/store/types'
@@ -30,7 +31,6 @@ const executeSearch = async () => {
     try {
       results.value = await searchShows(query)
     } catch (err) {
-      // TODO: handle errors
       console.error(err)
     } finally {
       loading.value = false
@@ -51,7 +51,7 @@ watch(() => route.query.q, executeSearch)
       <h1>Search Results</h1>
     </header>
     <main>
-      <div v-if="loading">Loading...</div>
+      <LoadingSpinner v-if="loading" />
       <GridList v-else-if="results.length" :shows="mappedResults" />
       <div v-else>No results found.</div>
     </main>

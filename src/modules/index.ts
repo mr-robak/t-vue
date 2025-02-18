@@ -7,7 +7,7 @@ import type { GenresMap, MappedShow } from '@/store/types'
 export const showsModule = {
   async fetchShows() {
     const store = useStore()
-    if (Object.keys(store.genres).length > 0) return // TODO: add check if show was updated since last fetch ???
+    if (Object.keys(store.genres).length > 0) return
 
     store.setLoading(true)
     store.setError(null)

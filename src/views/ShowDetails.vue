@@ -7,11 +7,11 @@ import type { ShowDetails } from '@/api/types'
 import BackButton from '@/components/BackButton.vue'
 import CardItem from '@/components/CardItem.vue'
 import AvatarImage from '@/components/AvatarImage.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 
 const route = useRoute()
 
 const show = ref<ShowDetails | null>(null)
-const error = ref<string | null>(null)
 
 const backgroundImage = computed(() => {
   if (!show.value?._embedded?.images) return ''
@@ -64,11 +64,7 @@ onMounted(async () => {
     const data = await fetchShowDetails(id)
     show.value = data
   } catch (err: unknown) {
-    if (err instanceof Error) {
-      error.value = err.message
-    } else {
-      error.value = 'Failed to fetch show details'
-    }
+    console.warn('Failed to fetch show details:', err)
   }
 })
 </script>
@@ -141,7 +137,7 @@ onMounted(async () => {
     </div>
   </section>
   <section v-else>
-    <p>Loading...</p>
+    <LoadingSpinner />
   </section>
 </template>
 
