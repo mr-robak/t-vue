@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
 import ShowDetails from '@/views/ShowDetails.vue'
-import SearchResults from '@/views/SearcResults.vue'
+import SearchResults from '@/views/SearchResults.vue'
 import GenreView from '@/views/GenreView.vue'
+import NotFound from '@/views/NotFound.vue'
 
 const routes = [
   {
@@ -25,8 +26,11 @@ const routes = [
     name: 'SearchShows',
     component: SearchResults,
   },
-  // TODO: add 404 page
-  // TODO: add redirect to home page
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound,
+  },
 ]
 
 const router = createRouter({
