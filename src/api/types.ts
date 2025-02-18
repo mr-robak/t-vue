@@ -16,12 +16,37 @@ export interface Show {
   weight: number
   network?: Network
   webChannel?: WebChannel
-  dvdCountry?: DvdCountry
+  dvdCountry?: Country
   externals: Externals
-  image?: Image | null
+  image?: ImageVariants | null
   summary?: string
   updated: number
   _links: Links
+}
+
+export interface ShowDetails extends Show {
+  _embedded: Embedded
+}
+
+export interface Embedded {
+  images: Image[]
+}
+export interface Image {
+  id: number
+  type: string
+  main: boolean
+  resolutions: ImageResolutions
+}
+
+export interface ImageResolutions {
+  original: ImageDetails
+  medium?: ImageDetails
+}
+
+export interface ImageDetails {
+  url: string
+  width: number
+  height: number
 }
 
 export interface Schedule {
@@ -49,20 +74,8 @@ export interface Country {
 export interface WebChannel {
   id: number
   name: string
-  country?: Country2
+  country?: Country
   officialSite?: string
-}
-
-export interface Country2 {
-  name: string
-  code: string
-  timezone: string
-}
-
-export interface DvdCountry {
-  name: string
-  code: string
-  timezone: string
 }
 
 export interface Externals {
@@ -71,7 +84,7 @@ export interface Externals {
   imdb?: string
 }
 
-export interface Image {
+export interface ImageVariants {
   medium: string
   original: string
 }

@@ -43,7 +43,7 @@ export async function fetchAllShows(): Promise<Show[]> {
 
 export async function fetchShowDetails(id: number): Promise<Show> {
   const response = await fetch(
-    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}/${id}?embed=cast`,
+    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}/${id}?embed=cast&embed=images`,
   )
   if (!response.ok) {
     throw new Error(
