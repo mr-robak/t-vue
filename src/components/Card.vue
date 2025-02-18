@@ -34,6 +34,7 @@ const onImageLoad = () => {
           :alt="`Poster for the TV show: ${name}`"
           :key="`show-poster-${id}`"
           @load="onImageLoad"
+          :style="{ opacity: isImageLoaded ? 1 : 0 }"
         />
       </div>
 
