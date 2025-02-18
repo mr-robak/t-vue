@@ -26,14 +26,14 @@ const shows = computed(() => store.genres[genre.value])
 
 <style scoped lang="scss">
 .genre-view {
-  padding: 1rem 1.5rem;
+  padding: 4.5rem 1rem 1rem;
 }
 
 header {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 
   h1 {
     color: $color-text-secondary;

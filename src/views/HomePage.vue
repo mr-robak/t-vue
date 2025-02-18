@@ -20,4 +20,8 @@ const genresEntries = computed(() => Object.entries(store.genres))
   </section>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+main {
+  padding-top: 4rem;
+}
+</style>

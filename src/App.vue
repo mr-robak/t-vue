@@ -49,7 +49,6 @@ header {
 }
 
 main {
-  padding-top: 3.5rem;
   width: 100%;
 }
 </style>

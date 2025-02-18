@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { PhArrowCircleLeft } from '@phosphor-icons/vue'
+import BackButton from '@/components/BackButton.vue'
 import { searchShows } from '@/api'
 import Card from '@/components/Card.vue'
 import { clearHTMLTags } from '@/utilities/helpers'
@@ -38,12 +38,11 @@ watch(() => route.query.q, executeSearch)
 <template>
   <div class="search-results">
     <header>
-      <button class="back-button" @click="goBack">
-        <PhArrowCircleLeft :size="32" />
-      </button>
+      <BackButton />
       <h1>Search Results</h1>
     </header>
     <div v-if="loading">Loading...</div>
+    <!-- TODO: use GridList component -->
     <div v-else-if="results.length" class="results-grid">
       <router-link
         v-for="result in results"
@@ -65,7 +64,7 @@ watch(() => route.query.q, executeSearch)
 
 <style scoped lang="scss">
 .search-results {
-  padding: 1rem 1.5rem;
+  padding: 4.5rem 1rem 1em 1rem;
 }
 
 header {
@@ -77,7 +76,7 @@ header {
 
   h1 {
     color: $color-text-secondary;
-    font-size: $font-size-xlg;
+    text-transform: capitalize;
   }
 }
 
