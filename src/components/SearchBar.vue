@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { PhMagnifyingGlass, PhXCircle } from '@phosphor-icons/vue'
+import { PhHouse, PhMagnifyingGlass, PhXCircle } from '@phosphor-icons/vue'
 
 const query = ref('')
 const router = useRouter()
@@ -15,7 +15,6 @@ const doSearch = () => {
 
 watchEffect(() => {
   if (route.name === 'SearchShows') {
-    // Set query value from URL when on search page
     query.value = (route.query.q as string) || ''
   } else {
     query.value = ''
@@ -25,6 +24,9 @@ watchEffect(() => {
 
 <template>
   <div class="search-bar">
+    <button class="home-button" @click="router.push({ name: 'Home' })">
+      <PhHouse size="32" color="var(--color-text-primary)" />
+    </button>
     <div class="search-wrapper">
       <div class="icon">
         <PhMagnifyingGlass size="20" />
@@ -61,6 +63,17 @@ watchEffect(() => {
   border: 1px solid $color-border;
   border-radius: 9999px;
   overflow: hidden;
+}
+
+.home-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding-right: 0.75rem;
+  color: $color-text-primary;
+  cursor: pointer;
 }
 
 .search-input {
