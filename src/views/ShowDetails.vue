@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { PhArrowCircleLeft } from '@phosphor-icons/vue'
 import { fetchShowDetails } from '@/api'
 import { clearHTMLTags } from '@/utilities/helpers'
-import BackButton from '@/components/BackButton.vue'
 import type { Show } from '@/api/types'
 
 const route = useRoute()
+const router = useRouter()
 const show = ref<Show | null>(null)
 const error = ref<string | null>(null)
+
+const goBack = () => router.back()
 
 onMounted(async () => {
   const id = Number(route.params.id)
@@ -29,7 +32,9 @@ onMounted(async () => {
 <template>
   <section v-if="show">
     <header class="header">
-      <BackButton />
+      <button class="back-button" @click="goBack">
+        <PhArrowCircleLeft :size="32" />
+      </button>
       <h1>{{ show.name }}</h1>
     </header>
     <main>
@@ -47,5 +52,20 @@ onMounted(async () => {
   align-items: center;
   gap: 1rem;
   color: $color-text-secondary;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-text-primary;
+  }
 }
 </style>

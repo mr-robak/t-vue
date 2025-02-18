@@ -2,12 +2,18 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomePage from '@/views/HomePage.vue'
 import ShowDetails from '@/views/ShowDetails.vue'
 import SearchResults from '@/views/SearcResults.vue'
+import GenreView from '@/views/GenreView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: HomePage,
+  },
+  {
+    path: '/genre/:genre',
+    name: 'Genre',
+    component: GenreView,
   },
   {
     path: '/shows/:id',

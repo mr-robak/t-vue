@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 const props = defineProps<{
   id?: number
   name?: string
@@ -8,14 +10,31 @@ const props = defineProps<{
   rating?: number | null
 }>()
 
+const isImageLoaded = ref(false)
 const noContent = Object.values(props).every((prop) => !prop)
+
+const onImageLoad = () => {
+  isImageLoaded.value = true
+}
 </script>
 
 <template>
-  <div class="card" :class="{ 'is-empty': noContent, 'has-image': image }">
+  <div
+    class="card"
+    :class="{
+      'is-empty': noContent,
+      'has-image': image,
+      'is-loading': image && !isImageLoaded,
+    }"
+  >
     <div class="card-wrapper">
       <div v-if="image" class="image-container">
-        <img :src="image" :alt="`Poster for the TV show: ${name}`" />
+        <img
+          :src="image"
+          :alt="`Poster for the TV show: ${name}`"
+          :key="`show-poster-${id}`"
+          @load="onImageLoad"
+        />
       </div>
 
       <div class="card-content">
@@ -49,9 +68,7 @@ const noContent = Object.values(props).every((prop) => !prop)
 .card {
   display: block;
   position: relative;
-  width: 200px;
-  min-width: 200px;
-  max-width: 200px;
+  width: 100%;
   background-color: $card-bg-color;
   border: $card-border-width solid $color-border;
   border-radius: $card-border-radius;
@@ -63,11 +80,16 @@ const noContent = Object.values(props).every((prop) => !prop)
     @include skeleton-loading;
     border: none;
   }
+
+  &.is-loading {
+    @include skeleton-loading;
+  }
 }
 
 .card-wrapper {
   position: relative;
-  height: 300px;
+  width: 100%;
+  height: 100%;
   transition: all 0.3s ease;
 }
 
@@ -92,6 +114,8 @@ const noContent = Object.values(props).every((prop) => !prop)
   display: flex;
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
   flex-direction: column;
   justify-content: space-between;
   padding: 0.75rem;

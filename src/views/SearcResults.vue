@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { PhArrowCircleLeft } from '@phosphor-icons/vue'
 import { searchShows } from '@/api'
-import BackButton from '@/components/BackButton.vue'
-import ShowCard from '@/components/ShowCard.vue'
+import Card from '@/components/Card.vue'
 import { clearHTMLTags } from '@/utilities/helpers'
 import type { SearchResult } from '@/api/types'
 
 const route = useRoute()
+const router = useRouter()
 const results = ref<SearchResult[]>([])
 const loading = ref(false)
+
+const goBack = () => router.back()
 
 const executeSearch = async () => {
   const query = (route.query.q as string) || ''
@@ -35,7 +38,9 @@ watch(() => route.query.q, executeSearch)
 <template>
   <div class="search-results">
     <header>
-      <BackButton />
+      <button class="back-button" @click="goBack">
+        <PhArrowCircleLeft :size="32" />
+      </button>
       <h1>Search Results</h1>
     </header>
     <div v-if="loading">Loading...</div>
@@ -45,7 +50,7 @@ watch(() => route.query.q, executeSearch)
         :key="result.show.id"
         :to="{ name: 'ShowDetails', params: { id: result.show.id } }"
       >
-        <ShowCard
+        <Card
           :key="result.show.id"
           :name="result.show.name"
           :summary="clearHTMLTags(result.show.summary)"
@@ -118,6 +123,21 @@ header {
       aspect-ratio: 2/3;
       height: auto;
     }
+  }
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: none;
+  padding: 0.25rem;
+  color: $color-text-secondary;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-text-primary;
   }
 }
 </style>

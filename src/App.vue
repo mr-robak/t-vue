@@ -1,5 +1,19 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { showsModule } from '@/modules/index'
 import SearchBar from '@/components/SearchBar.vue'
+import { useStore } from './store'
+
+const store = useStore()
+
+onMounted(async () => {
+  try {
+    await showsModule.fetchShows()
+  } catch (error) {
+    console.error('Failed to fetch shows:', error)
+    //TODO: error handling
+  }
+})
 </script>
 
 <template>
@@ -8,14 +22,11 @@ import SearchBar from '@/components/SearchBar.vue'
       <SearchBar />
     </header>
     <main>
-      <Suspense>
-        <template #default>
-          <router-view />
-        </template>
-        <template #fallback>
-          <div>Loading...</div>
-        </template>
-      </Suspense>
+      <div v-if="store.isLoading" class="loader">
+        <!-- TODO: implement loader -->
+        Loading...
+      </div>
+      <router-view v-else />
     </main>
   </div>
 </template>

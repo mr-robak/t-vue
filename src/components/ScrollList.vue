@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref } from 'vue'
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-import ShowCard from './ShowCard.vue'
+import Card from './Card.vue'
 import {
   PhCaretLeft,
   PhCaretRight,
@@ -24,19 +24,13 @@ const minItemSize = computed(() => {
   return 200 // desktop
 })
 
+// TODO: store the minItemSize to avoid recalculating, might need to also store current view size to check if it changed and move it to helper
 const MappedShowsWithSize = computed(() =>
   props.shows.map((show) => ({
     ...show,
     size: minItemSize.value,
   })),
 )
-
-function handleResize() {
-  scrollContainer.value?.$forceUpdate()
-}
-
-onMounted(() => window.addEventListener('resize', handleResize))
-onUnmounted(() => window.removeEventListener('resize', handleResize))
 
 function scrollLeft() {
   scrollContainer.value?.$el.scrollBy({ left: -600, behavior: 'smooth' })
@@ -50,14 +44,14 @@ function scrollRight() {
 <template>
   <div class="genre-section">
     <div class="genre-header">
-      <div
+      <router-link
+        :to="{ name: 'Genre', params: { genre: props.genre } }"
         class="genre-title"
-        :class="{ 'is-skeleton': !MappedShowsWithSize.length }"
       >
-        <h2>{{ MappedShowsWithSize.length ? props.genre : '' }}</h2>
-        <PhArrowCircleRight v-if="MappedShowsWithSize.length" :size="28" />
-      </div>
-      <div v-if="MappedShowsWithSize.length" class="scroll-buttons">
+        <h2>{{ props.genre }}</h2>
+        <PhArrowCircleRight :size="28" />
+      </router-link>
+      <div class="scroll-buttons">
         <button class="scroll-button" @click="scrollLeft">
           <PhCaretLeft :size="32" />
         </button>
@@ -66,7 +60,7 @@ function scrollRight() {
         </button>
       </div>
     </div>
-    <div class="cards-container" v-if="MappedShowsWithSize.length">
+    <div class="cards-container">
       <DynamicScroller
         ref="scrollContainer"
         class="scroller"
@@ -84,7 +78,7 @@ function scrollRight() {
           >
             <router-link :to="{ name: 'ShowDetails', params: { id: item.id } }">
               <div class="card-item-wrapper">
-                <ShowCard
+                <Card
                   :name="item.name"
                   :summary="item.summary"
                   :image="item.image"
@@ -125,6 +119,13 @@ function scrollRight() {
   align-items: center;
   gap: 0.5rem;
   color: $color-text-secondary;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-text-primary;
+  }
 
   h2 {
     margin: 0;
@@ -138,11 +139,6 @@ function scrollRight() {
   svg {
     margin-top: 0.15rem;
     color: $color-text-primary;
-
-    :hover {
-      // TODO: add glow on hover ove r button
-      filter: drop-shadow(0 0 8px rgb(255, 255, 255));
-    }
   }
 
   &.is-skeleton {

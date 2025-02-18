@@ -1,28 +1,20 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { showsModule } from '@/modules/index'
+import { computed } from 'vue'
 import { useStore } from '@/store'
-import ShowsList from '@/components/ShowsList.vue'
+import ScrollList from '@/components/ScrollList.vue'
 
 const store = useStore()
-
 const genresEntries = computed(() => Object.entries(store.genres))
-
-// TODO: implement loader
-onMounted(async () => {
-  await showsModule.fetchShows()
-  // TODO: catch errors
-})
 </script>
 
 <template>
   <section>
     <main>
-      <ShowsList
-        v-for="[genreName, showsList] in genresEntries"
+      <ScrollList
+        v-for="[genreName, ScrollList] in genresEntries"
         :key="genreName"
         :genre="genreName"
-        :shows="showsList"
+        :shows="ScrollList"
       />
     </main>
   </section>
