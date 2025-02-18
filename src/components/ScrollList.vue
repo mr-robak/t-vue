@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-import Card from './Card.vue'
+import CardItem from './CardItem.vue'
 import {
   PhCaretLeft,
   PhCaretRight,
@@ -82,7 +82,7 @@ function scrollRight() {
           >
             <router-link :to="{ name: 'ShowDetails', params: { id: item.id } }">
               <div class="card-item-wrapper">
-                <Card
+                <CardItem
                   :name="item.name"
                   :summary="item.summary"
                   :image="item.image"

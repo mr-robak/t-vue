@@ -3,7 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BackButton from '@/components/BackButton.vue'
 import { searchShows } from '@/api'
-import Card from '@/components/Card.vue'
+import CardItem from '@/components/CardItem.vue'
 import { clearHTMLTags } from '@/utilities/helpers'
 import type { SearchResult } from '@/api/types'
 
@@ -46,7 +46,7 @@ watch(() => route.query.q, executeSearch)
         :key="result.show.id"
         :to="{ name: 'ShowDetails', params: { id: result.show.id } }"
       >
-        <Card
+        <CardItem
           :key="result.show.id"
           :name="result.show.name"
           :summary="clearHTMLTags(result.show.summary)"

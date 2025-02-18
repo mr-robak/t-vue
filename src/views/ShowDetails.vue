@@ -5,8 +5,8 @@ import { fetchShowDetails } from '@/api'
 import { clearHTMLTags, formatYear } from '@/utilities/helpers'
 import type { ShowDetails } from '@/api/types'
 import BackButton from '@/components/BackButton.vue'
-import Card from '@/components/Card.vue'
-import Avatar from '@/components/Avatar.vue'
+import CardItem from '@/components/CardItem.vue'
+import AvatarImage from '@/components/AvatarImage.vue'
 
 const route = useRoute()
 
@@ -114,7 +114,7 @@ onMounted(async () => {
         <div class="seasons-section">
           <h2 class="seasons-title">Seasons</h2>
           <div class="seasons-grid">
-            <Card
+            <CardItem
               v-for="season in show._embedded?.seasons"
               :key="season.id"
               :id="season.id"
@@ -128,7 +128,7 @@ onMounted(async () => {
         <div class="cast-section">
           <h2 class="section-title">Cast</h2>
           <div class="cast-grid">
-            <Avatar
+            <AvatarImage
               v-for="actor in mappedCast"
               :key="actor.id"
               :image="actor.image"
@@ -162,7 +162,7 @@ onMounted(async () => {
   background-color: $color-background;
 
   @include desktop {
-    background-size: 1920px auto;
+    background-size: cover;
     background-position: top center;
   }
 

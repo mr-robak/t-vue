@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Card from './Card.vue'
+import Card from './CardItem.vue'
 import type { MappedShow } from '@/store/types'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 
