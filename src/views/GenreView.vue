@@ -9,13 +9,13 @@ const route = useRoute()
 const store = useStore()
 
 const genre = computed(() => route.params.genre as string)
-const shows = computed(() => store.genres[genre.value])
+const shows = computed(() => store.showsByGenre(genre.value))
 </script>
 
 <template>
   <div class="genre-view">
     <header>
-      <BackButton />
+      <BackButton class="back-button" />
       <h1>{{ genre }}</h1>
     </header>
     <main>
@@ -38,21 +38,15 @@ header {
   h1 {
     color: $color-text-secondary;
     text-transform: capitalize;
+    margin: 0;
+    line-height: 1;
   }
-}
 
-.back-button {
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  padding: 0.25rem;
-  color: $color-text-secondary;
-  cursor: pointer;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: $color-text-primary;
+  .back-button {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 </style>
