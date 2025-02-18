@@ -1,4 +1,4 @@
-import { sleep, clearHTMLTags } from '../helpers'
+import { sleep, clearHTMLTags, formatYear, formatDate } from '../helpers'
 
 describe('helpers', () => {
   describe('sleep', () => {
@@ -48,6 +48,39 @@ describe('helpers', () => {
 
     it('should preserve line breaks in text', () => {
       expect(clearHTMLTags('<p>Line 1\nLine 2</p>')).toBe('Line 1\nLine 2')
+    })
+  })
+
+  describe('formatYear', () => {
+    it('should return empty string for null input', () => {
+      expect(formatYear(null)).toBe('')
+    })
+
+    it('should return empty string for undefined input', () => {
+      expect(formatYear(undefined)).toBe('')
+    })
+
+    it('should return year from valid date string', () => {
+      expect(formatYear('2024-02-18')).toBe('2024')
+    })
+  })
+
+  describe('formatDate', () => {
+    it('should return empty string for null input', () => {
+      expect(formatDate(null)).toBe('')
+    })
+
+    it('should return empty string for undefined input', () => {
+      expect(formatDate(undefined)).toBe('')
+    })
+
+    it('should format date in Month YYYY format', () => {
+      expect(formatDate('2024-02-18')).toBe('Feb 2024')
+    })
+
+    it('should handle different date formats', () => {
+      expect(formatDate('2024/02/18')).toBe('Feb 2024')
+      expect(formatDate('2024.02.18')).toBe('Feb 2024')
     })
   })
 })
