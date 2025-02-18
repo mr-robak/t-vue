@@ -1,6 +1,5 @@
 import { fetchAllShows } from '@/api'
 import { useStore } from '@/store'
-import { clearHTMLTags } from '@/utilities/helpers'
 import type { Show } from '@/api/types'
 import type { GenresMap, MappedShow } from '@/store/types'
 
@@ -32,7 +31,7 @@ export const showsModule = {
   getGenresMap(shows: Show[]): GenresMap {
     const genresMap: GenresMap = {}
 
-    // TODO: improve by sorting in line here???
+    // TODO: improve by sorting in line here
     shows.forEach((show) => {
       show.genres.forEach((genre) => {
         if (!genresMap[genre]) genresMap[genre] = []
@@ -40,7 +39,7 @@ export const showsModule = {
           id: show.id,
           name: show.name,
           image: show.image?.medium || null,
-          summary: clearHTMLTags(show.summary) || null,
+          summary: show.summary || null,
           rating: show.rating.average || null,
           year: show.premiered ? show.premiered.split('-')[0] : null,
         })

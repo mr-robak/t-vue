@@ -9,6 +9,7 @@ import {
   PhArrowCircleRight,
 } from '@phosphor-icons/vue'
 import type { MappedShow } from '@/store/types'
+import { clearHTMLTags } from '@/utilities/helpers'
 
 const props = defineProps<{
   genre: string
@@ -84,7 +85,7 @@ function scrollRight() {
               <div class="card-item-wrapper">
                 <CardItem
                   :name="item.name"
-                  :summary="item.summary"
+                  :summary="clearHTMLTags(item.summary)"
                   :image="item.image"
                   :year="item.year"
                   :rating="item.rating"
