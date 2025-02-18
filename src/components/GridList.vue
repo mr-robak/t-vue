@@ -45,7 +45,6 @@ const visibleItems = computed(() => {
       buffer,
   )
 
-  // Calculate start and end indices for items
   const start = startRow * columnsCount.value
   const end = Math.min(props.shows.length, (endRow + 1) * columnsCount.value)
 

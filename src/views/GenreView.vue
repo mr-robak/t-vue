@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from '@/store'
-import Grid from '@/components/Grid.vue'
+import GridList from '@/components/GridList.vue'
 import BackButton from '@/components/BackButton.vue'
 
 const route = useRoute()
@@ -19,7 +19,7 @@ const shows = computed(() => store.genres[genre.value])
       <h1>{{ genre }}</h1>
     </header>
     <main>
-      <Grid :shows="shows" />
+      <GridList :shows="shows" />
     </main>
   </div>
 </template>

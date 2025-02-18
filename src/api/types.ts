@@ -30,6 +30,51 @@ export interface ShowDetails extends Show {
 
 export interface Embedded {
   images: Image[]
+  seasons: Season[]
+  cast: Cast[]
+}
+
+export interface Cast {
+  person: Person
+  character: Character
+  self: boolean
+  voice: boolean
+}
+
+export interface Person {
+  id: number
+  url: string
+  name: string
+  country: Country
+  birthday: string
+  deathday: string
+  gender: string
+  image: ImageVariants
+  updated: number
+  _links: Links
+}
+
+export interface Character {
+  id: number
+  url: string
+  name: string
+  image: ImageVariants
+  _links: ImageVariants
+}
+
+export interface Season {
+  id: number
+  url: string
+  number: number
+  name: string
+  episodeOrder: number
+  premiereDate: string
+  endDate: string
+  network: Network
+  webChannel: WebChannel
+  image: ImageVariants
+  summary?: string
+  _links: Links
 }
 export interface Image {
   id: number

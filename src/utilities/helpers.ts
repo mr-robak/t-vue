@@ -8,3 +8,16 @@ export function clearHTMLTags(html: string | null | undefined): string | null {
   if (html === '') return ''
   return html.replace(/(<([^>]+)>)/gi, '').trim()
 }
+
+export function formatYear(date: string | null | undefined): string {
+  if (!date) return ''
+  return new Date(date).getFullYear().toString()
+}
+
+export function formatDate(date: string | null | undefined): string {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+  })
+}

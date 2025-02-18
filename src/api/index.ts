@@ -1,6 +1,6 @@
 import { sleep } from '@/utilities/helpers'
 import { API } from '@/assets/constants'
-import type { SearchResult, Show } from './types'
+import type { SearchResult, Show, ShowDetails } from './types'
 
 async function fetchPage(page: number): Promise<Show[]> {
   const response = await fetch(
@@ -31,8 +31,8 @@ export async function fetchAllShows(): Promise<Show[]> {
         page++
       }
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        throw new Error(`Failed to fetch shows: Error: ${error.message}`)
+      if (error instanceof Response && error.status === 404) {
+        return shows
       }
       throw new Error('Failed to fetch shows: an unknown error occurred')
     }
@@ -41,9 +41,9 @@ export async function fetchAllShows(): Promise<Show[]> {
   return shows
 }
 
-export async function fetchShowDetails(id: number): Promise<Show> {
+export async function fetchShowDetails(id: number): Promise<ShowDetails> {
   const response = await fetch(
-    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}/${id}?embed=cast&embed=images`,
+    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}/${id}?embed[]=seasons&embed[]=cast&embed[]=crew&embed[]=images`,
   )
   if (!response.ok) {
     throw new Error(

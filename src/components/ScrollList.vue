@@ -13,6 +13,7 @@ import type { MappedShow } from '@/store/types'
 const props = defineProps<{
   genre: string
   shows: MappedShow[]
+  navigation?: boolean
 }>()
 
 const scrollContainer = ref<InstanceType<typeof DynamicScroller> | null>(null)
@@ -24,7 +25,6 @@ const minItemSize = computed(() => {
   return 200 // desktop
 })
 
-// TODO: store the minItemSize to avoid recalculating, might need to also store current view size to check if it changed and move it to helper
 const MappedShowsWithSize = computed(() =>
   props.shows.map((show) => ({
     ...show,
@@ -44,13 +44,17 @@ function scrollRight() {
 <template>
   <div class="genre-section">
     <div class="genre-header">
-      <router-link
-        :to="{ name: 'Genre', params: { genre: props.genre } }"
-        class="genre-title"
-      >
-        <h2>{{ props.genre }}</h2>
-        <PhArrowCircleRight :size="28" />
-      </router-link>
+      <div class="genre-title-wrapper">
+        <router-link
+          v-if="props.navigation"
+          :to="{ name: 'Genre', params: { genre: props.genre } }"
+          class="genre-title"
+        >
+          <h2>{{ props.genre }}</h2>
+          <PhArrowCircleRight :size="28" />
+        </router-link>
+        <h2 v-else>{{ props.genre }}</h2>
+      </div>
       <div class="scroll-buttons">
         <button class="scroll-button" @click="scrollLeft">
           <PhCaretLeft :size="32" />
@@ -106,11 +110,24 @@ function scrollRight() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0 0.25rem 1rem;
+  padding: 0.5rem 1rem 0.25rem 1rem;
   flex-wrap: nowrap;
 
   @include phone {
-    padding-left: 0.5rem;
+    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+  }
+}
+
+.genre-title-wrapper {
+  flex: 1;
+
+  h2 {
+    margin: 0;
+    font-size: 1.75rem;
+
+    @include phone {
+      font-size: 1.5rem;
+    }
   }
 }
 
@@ -154,8 +171,8 @@ function scrollRight() {
 
 .scroll-buttons {
   display: flex;
-  margin-left: 1rem;
   gap: 0.25rem;
+  margin-left: 1rem;
 
   @include phone {
     gap: 0.5rem;

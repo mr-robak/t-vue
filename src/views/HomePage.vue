@@ -15,6 +15,7 @@ const genresEntries = computed(() => Object.entries(store.genres))
         :key="genreName"
         :genre="genreName"
         :shows="ScrollList"
+        navigation
       />
     </main>
   </section>

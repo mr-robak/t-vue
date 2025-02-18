@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BackButton from '@/components/BackButton.vue'
 import { searchShows } from '@/api'
 import Card from '@/components/Card.vue'
@@ -8,11 +8,8 @@ import { clearHTMLTags } from '@/utilities/helpers'
 import type { SearchResult } from '@/api/types'
 
 const route = useRoute()
-const router = useRouter()
 const results = ref<SearchResult[]>([])
 const loading = ref(false)
-
-const goBack = () => router.back()
 
 const executeSearch = async () => {
   const query = (route.query.q as string) || ''
