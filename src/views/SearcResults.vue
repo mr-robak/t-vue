@@ -1,15 +1,27 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import BackButton from '@/components/BackButton.vue'
 import { searchShows } from '@/api'
-import CardItem from '@/components/CardItem.vue'
+import GridList from '@/components/GridList.vue'
 import { clearHTMLTags } from '@/utilities/helpers'
 import type { SearchResult } from '@/api/types'
+import type { MappedShow } from '@/store/types'
 
 const route = useRoute()
 const results = ref<SearchResult[]>([])
 const loading = ref(false)
+
+const mappedResults = computed(() => {
+  return results.value.map((result) => ({
+    id: result.show.id,
+    name: result.show.name,
+    summary: clearHTMLTags(result.show.summary),
+    image: result.show.image?.medium,
+    rating: result.show.rating.average,
+    year: result.show.premiered?.split('-')[0],
+  })) as MappedShow[]
+})
 
 const executeSearch = async () => {
   const query = (route.query.q as string) || ''
@@ -38,30 +50,20 @@ watch(() => route.query.q, executeSearch)
       <BackButton />
       <h1>Search Results</h1>
     </header>
-    <div v-if="loading">Loading...</div>
-    <!-- TODO: use GridList component -->
-    <div v-else-if="results.length" class="results-grid">
-      <router-link
-        v-for="result in results"
-        :key="result.show.id"
-        :to="{ name: 'ShowDetails', params: { id: result.show.id } }"
-      >
-        <CardItem
-          :key="result.show.id"
-          :name="result.show.name"
-          :summary="clearHTMLTags(result.show.summary)"
-          :image="result.show.image?.medium"
-          :rating="result.show.rating.average"
-        />
-      </router-link>
-    </div>
-    <div v-else>No results found.</div>
+    <main>
+      <div v-if="loading">Loading...</div>
+      <GridList v-else-if="results.length" :shows="mappedResults" />
+      <div v-else>No results found.</div>
+    </main>
   </div>
 </template>
 
 <style scoped lang="scss">
 .search-results {
-  padding: 4.5rem 1rem 1em 1rem;
+  padding: 4.5rem 0 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 header {
@@ -69,6 +71,7 @@ header {
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  padding: 0 1rem;
   position: relative;
 
   h1 {
@@ -77,63 +80,12 @@ header {
   }
 }
 
-.results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
-  gap: 1rem;
+main {
+  flex: 1;
+  overflow: hidden;
 
-  @include tablet {
-    grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
-  }
-
-  @include phone {
-    grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr));
-  }
-}
-
-:deep(.card) {
-  width: 100%;
-  min-width: unset;
-
-  @include tablet {
-    width: 100%;
-    min-width: unset;
-  }
-
-  @include phone {
-    width: 100%;
-    min-width: unset;
-  }
-
-  .card-wrapper {
-    aspect-ratio: 2/3;
-    height: auto;
-    width: 100%;
-
-    @include tablet {
-      aspect-ratio: 2/3;
-      height: auto;
-    }
-
-    @include phone {
-      aspect-ratio: 2/3;
-      height: auto;
-    }
-  }
-}
-
-.back-button {
-  display: flex;
-  align-items: center;
-  background: transparent;
-  border: none;
-  padding: 0.25rem;
-  color: $color-text-secondary;
-  cursor: pointer;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: $color-text-primary;
+  > div {
+    padding: 0 1rem;
   }
 }
 </style>

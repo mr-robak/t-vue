@@ -8,8 +8,8 @@ const props = defineProps<{
 }>()
 
 const containerRef = ref<HTMLElement | null>(null)
-const itemHeight = 240 // Approximate height of each card
-const buffer = 5 // Number of items to render above/below visible area
+const itemHeight = 240
+const buffer = 5
 
 const scrollPosition = ref(0)
 const viewportHeight = ref(0)
@@ -17,9 +17,9 @@ const columnsCount = ref(0)
 
 const updateLayout = () => {
   if (containerRef.value) {
-    viewportHeight.value = window.innerHeight // Changed to window height
+    viewportHeight.value = window.innerHeight
     const containerWidth = containerRef.value.clientWidth
-    const minCardWidth = 160
+    const minCardWidth = window.innerWidth <= 576 ? 120 : 160
     const gap = 16
     const padding = 16
     const availableWidth = containerWidth - padding * 2
@@ -56,18 +56,18 @@ const totalHeight = computed(
 )
 
 const handleScroll = () => {
-  scrollPosition.value = window.scrollY // Changed to window scroll position
+  scrollPosition.value = window.scrollY
 }
 
 onMounted(() => {
   updateLayout()
   window.addEventListener('resize', updateLayout)
-  window.addEventListener('scroll', handleScroll) // Changed to window scroll
+  window.addEventListener('scroll', handleScroll)
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateLayout)
-  window.removeEventListener('scroll', handleScroll) // Changed to window scroll
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
@@ -107,13 +107,15 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .grid-wrapper {
-  // position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  height: 100%;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .grid-container {
@@ -126,13 +128,18 @@ onUnmounted(() => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 1rem;
-  padding: 0.5rem;
+  padding: 0 1rem;
   width: 100%;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   box-sizing: border-box;
+
+  @include phone {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+  }
 }
 
 .show-link {
@@ -140,6 +147,10 @@ onUnmounted(() => {
   width: 100%;
   aspect-ratio: 2/3;
   margin-bottom: 1rem;
+
+  @include phone {
+    margin-bottom: 0.75rem;
+  }
 }
 
 :deep(.card) {
@@ -150,6 +161,10 @@ onUnmounted(() => {
     aspect-ratio: 2/3;
     width: 100%;
     height: auto;
+
+    @include phone {
+      min-height: 180px;
+    }
   }
 }
 </style>
