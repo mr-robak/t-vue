@@ -18,7 +18,7 @@ onMounted(async () => {
 
 <template>
   <div id="app">
-    <header>
+    <header class="sticky-header">
       <SearchBar />
     </header>
     <main>
@@ -26,7 +26,7 @@ onMounted(async () => {
         <!-- TODO: implement loader -->
         Loading...
       </div>
-      <router-view v-else />
+      <router-view v-else class="main-component" />
     </main>
   </div>
 </template>
@@ -35,5 +35,21 @@ onMounted(async () => {
 header {
   width: 100%;
   padding: 0.5rem;
+}
+
+.sticky-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+main {
+  padding-top: 3.5rem;
+  width: 100%;
 }
 </style>
