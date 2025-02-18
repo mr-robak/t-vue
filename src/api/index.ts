@@ -2,17 +2,34 @@ import { sleep } from '@/utilities/helpers'
 import { API } from '@/assets/constants'
 import type { SearchResult, Show, ShowDetails } from './types'
 
-async function fetchPage(page: number): Promise<Show[]> {
-  const response = await fetch(
-    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}?page=${page}`,
-  )
+async function fetchPage(page: number, retries = 0): Promise<Show[]> {
+  try {
+    const response = await fetch(
+      `${API.BASE_URL}${API.ENDPOINTS.SHOWS}?page=${page}`,
+    )
 
-  if (response.status === 429) {
-    await sleep(API.RATE_LIMIT_DELAY)
-    return fetchPage(page)
+    if (response.status === 429) {
+      if (retries >= API.MAX_RETRIES) {
+        throw new Error('Maximum retries exceeded')
+      }
+      await sleep(API.RATE_LIMIT_DELAY)
+      return fetchPage(page, retries + 1)
+    }
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return []
+      }
+      throw response
+    }
+
+    return response.json()
+  } catch (error) {
+    if (error instanceof Response) {
+      throw error
+    }
+    throw new Error('Failed to fetch shows: an unknown error occurred')
   }
-
-  return response.json()
 }
 
 export async function fetchAllShows(): Promise<Show[]> {
@@ -30,11 +47,14 @@ export async function fetchAllShows(): Promise<Show[]> {
         shows = [...shows, ...data]
         page++
       }
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof Response && error.status === 404) {
         return shows
       }
-      throw new Error('Failed to fetch shows: an unknown error occurred')
+
+      throw error instanceof Error
+        ? error
+        : new Error('Failed to fetch shows: an unknown error occurred')
     }
   }
 

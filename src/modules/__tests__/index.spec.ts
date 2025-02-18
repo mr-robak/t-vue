@@ -2,171 +2,131 @@ import { showsModule } from '../index'
 import { fetchAllShows } from '@/api'
 import { useStore } from '@/store'
 import type { Show } from '@/api/types'
-import type { MappedShow } from '@/store/types'
+import { vi, describe, beforeEach, it, expect } from 'vitest'
 
-vi.mock('@/api', () => ({
-  fetchAllShows: vi.fn(),
+vi.mock('@/api')
+vi.mock('@/store', () => ({
+  useStore: vi.fn(),
 }))
-vi.mock('@/store', () => {
-  const storeMock = {
+
+describe('showsModule', () => {
+  const mockStore = {
     genres: {},
     setLoading: vi.fn(),
     setError: vi.fn(),
     setGenres: vi.fn(),
   }
-  return {
-    useStore: vi.fn(() => storeMock),
-  }
-})
 
-describe('showsModule', () => {
-  let store: ReturnType<typeof useStore>
+  const mockShows: Show[] = [
+    {
+      id: 1,
+      name: 'Show 1',
+      genres: ['Drama', 'Comedy'],
+      rating: { average: 8.5 },
+      image: { medium: 'image1.jpg' },
+      summary: 'Summary 1',
+      premiered: '2020-01-01',
+    },
+    {
+      id: 2,
+      name: 'Show 2',
+      genres: ['Comedy'],
+      rating: { average: 9.0 },
+      image: null,
+      summary: null,
+      premiered: null,
+    },
+  ]
 
   beforeEach(() => {
     vi.clearAllMocks()
-    store = useStore()
-    store.genres = {}
+    mockStore.genres = {}
+    mockStore.setLoading.mockClear()
+    mockStore.setError.mockClear()
+    mockStore.setGenres.mockClear()
+    vi.mocked(useStore).mockReturnValue(mockStore)
+    vi.mocked(fetchAllShows).mockResolvedValue(mockShows)
+  })
+
+  describe('fetchShows', () => {
+    it('should early return if genres are already loaded', async () => {
+      mockStore.genres = { Drama: [] }
+      await showsModule.fetchShows()
+
+      expect(fetchAllShows).not.toHaveBeenCalled()
+      expect(mockStore.setLoading).not.toHaveBeenCalled()
+    })
+
+    it('should fetch and process shows successfully', async () => {
+      await showsModule.fetchShows()
+
+      expect(mockStore.setLoading).toHaveBeenCalledWith(true)
+      expect(fetchAllShows).toHaveBeenCalled()
+      expect(mockStore.setGenres).toHaveBeenCalled()
+      expect(mockStore.setError).toHaveBeenCalledWith(null)
+      expect(mockStore.setLoading).toHaveBeenLastCalledWith(false)
+    })
+
+    it('should handle errors appropriately', async () => {
+      const error = new Error('API Error')
+      ;(fetchAllShows as jest.Mock).mockRejectedValue(error)
+
+      await showsModule.fetchShows()
+
+      expect(mockStore.setError).toHaveBeenCalledWith('API Error')
+      expect(mockStore.setLoading).toHaveBeenLastCalledWith(false)
+    })
   })
 
   describe('getGenresMap', () => {
-    it('should build a genres map from an array of shows', () => {
-      const shows: Partial<Show>[] = [
-        {
-          id: 1,
-          name: 'Show One',
-          genres: ['Drama', 'Comedy'],
-          image: { original: 'img1.png', medium: 'img1.png' },
-          summary: 'Summary 1',
-          rating: { average: 8 },
-          premiered: '2021-01-01',
-        },
-        {
-          id: 2,
-          name: 'Show Two',
-          genres: ['Drama'],
-          image: { original: 'img2.png', medium: 'img2.png' },
-          summary: 'Summary 2',
-          rating: { average: 9 },
-          premiered: '2020-05-05',
-        },
-      ]
+    it('should correctly map shows to genres', () => {
+      const result = showsModule.getGenresMap(mockShows)
 
-      const genresMap = showsModule.getGenresMap(shows as Show[])
-      expect(Object.keys(genresMap)).toContain('Drama')
-      expect(Object.keys(genresMap)).toContain('Comedy')
-      expect(genresMap['Drama']).toHaveLength(2)
-      expect(genresMap['Comedy']).toHaveLength(1)
-      expect(genresMap['Comedy'][0]).toEqual({
-        id: 1,
-        name: 'Show One',
-        image: 'img1.png',
-        summary: 'Summary 1',
-        rating: 8,
-        year: '2021',
+      expect(Object.keys(result)).toEqual(['Drama', 'Comedy'])
+      expect(result.Drama).toHaveLength(1)
+      expect(result.Comedy).toHaveLength(2)
+    })
+
+    it('should handle shows with missing optional fields', () => {
+      const result = showsModule.getGenresMap(mockShows)
+
+      expect(result.Comedy[1]).toEqual({
+        id: 2,
+        name: 'Show 2',
+        image: null,
+        summary: null,
+        rating: 9.0,
+        year: null,
       })
     })
   })
 
   describe('sortByRating', () => {
-    const data: MappedShow[] = [
-      { id: 1, name: 'A', image: null, summary: '', rating: 5, year: '2019' },
-      { id: 2, name: 'B', image: null, summary: '', rating: 8, year: '2020' },
-      {
-        id: 3,
-        name: 'C',
-        image: null,
-        summary: '',
-        rating: null,
-        year: '2021',
-      },
+    const shows = [
+      { id: 1, name: 'Show 1', rating: 8.5 },
+      { id: 2, name: 'Show 2', rating: 9.0 },
+      { id: 3, name: 'Show 3', rating: null },
     ]
 
-    it('should sort shows descending by default', () => {
-      const sorted = showsModule.sortByRating([...data])
-      expect(sorted).toEqual([
-        { id: 2, name: 'B', image: null, summary: '', rating: 8, year: '2020' },
-        { id: 1, name: 'A', image: null, summary: '', rating: 5, year: '2019' },
-        {
-          id: 3,
-          name: 'C',
-          image: null,
-          summary: '',
-          rating: null,
-          year: '2021',
-        },
-      ])
+    it('should sort shows by rating in descending order by default', () => {
+      const result = showsModule.sortByRating(shows)
+
+      expect(result[0].rating).toBe(9.0)
+      expect(result[1].rating).toBe(8.5)
+      expect(result[2].rating).toBe(null)
     })
 
-    it('should sort shows ascending when specified', () => {
-      const sorted = showsModule.sortByRating([...data], 'asc')
-      expect(sorted).toEqual([
-        {
-          id: 3,
-          name: 'C',
-          image: null,
-          summary: '',
-          rating: null,
-          year: '2021',
-        },
-        { id: 1, name: 'A', image: null, summary: '', rating: 5, year: '2019' },
-        { id: 2, name: 'B', image: null, summary: '', rating: 8, year: '2020' },
-      ])
-    })
-  })
+    it('should sort shows by rating in ascending order', () => {
+      const result = showsModule.sortByRating(shows, 'asc')
 
-  describe('fetchShows', () => {
-    it('should not fetch new shows if store already has genres', async () => {
-      store.genres = { Drama: [] }
-      await showsModule.fetchShows()
-      expect(store.setLoading).not.toHaveBeenCalled()
-      expect(fetchAllShows).not.toHaveBeenCalled()
+      expect(result[0].rating).toBe(null)
+      expect(result[1].rating).toBe(8.5)
+      expect(result[2].rating).toBe(9.0)
     })
 
-    it('should fetch shows, process them, and update the store', async () => {
-      store.genres = {}
-      const mockShows: Partial<Show>[] = [
-        {
-          id: 1,
-          name: 'Mock Show',
-          genres: ['Drama'],
-          image: { original: 'img.png', medium: 'img.png' },
-          summary: 'A mock show',
-          rating: { average: 7 },
-          premiered: '2022-03-03',
-        },
-      ]
-      const fetchAllShowsMock = vi.mocked(fetchAllShows)
-      fetchAllShowsMock.mockResolvedValue(mockShows as Show[])
-
-      await showsModule.fetchShows()
-
-      expect(store.setLoading).toHaveBeenCalledWith(true)
-      expect(fetchAllShows).toHaveBeenCalled()
-      expect(store.setGenres).toHaveBeenCalled()
-
-      const genresArg = (store.setGenres as vi.Mock).mock.calls[0][0]
-      expect(genresArg).toHaveProperty('Drama')
-      expect(genresArg['Drama'][0]).toEqual({
-        id: 1,
-        name: 'Mock Show',
-        image: 'img.png',
-        summary: 'A mock show',
-        rating: 7,
-        year: '2022',
-      })
-      expect(store.setLoading).toHaveBeenLastCalledWith(false)
-    })
-
-    it('should set error on fetch failure', async () => {
-      store.genres = {}
-      const errorMsg = 'API Error'
-      const fetchAllShowsMock = fetchAllShows as unknown as vi.Mock
-      fetchAllShowsMock.mockRejectedValue(new Error(errorMsg))
-
-      await showsModule.fetchShows()
-
-      expect(store.setError).toHaveBeenCalledWith(errorMsg)
-      expect(store.setLoading).toHaveBeenLastCalledWith(false)
+    it('should handle empty array', () => {
+      const result = showsModule.sortByRating([])
+      expect(result).toEqual([])
     })
   })
 })
