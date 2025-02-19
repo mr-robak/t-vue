@@ -66,7 +66,7 @@ const showMeta = computed(() => {
   const meta = []
 
   if (show.value.runtime) {
-    meta.push(`${show.value.runtime} min`)
+    meta.push(`Avg. ${show.value.runtime} min`)
   }
 
   if (show.value.genres?.length) {
@@ -116,12 +116,24 @@ onMounted(async () => {
             class="show-image"
           />
           <div class="show-header-content">
-            <h1 class="show-title">
-              {{ show.name }}
-              <span v-if="formattedAirDate" class="air-date"
-                >({{ formattedAirDate }})</span
-              >
-            </h1>
+            <div class="header-main-info">
+              <h1 class="show-title">
+                {{ show.name }}
+                <span v-if="formattedAirDate" class="air-date">
+                  ({{ formattedAirDate }})
+                </span>
+              </h1>
+              <div v-if="show.rating" class="rating-container">
+                <img
+                  src="@/assets/images/tmdb-logo.svg"
+                  alt="TMDB Logo"
+                  class="tmdb-logo"
+                />
+                <span class="rating"
+                  >{{ Math.round((show.rating?.average || 0) * 10) }}%</span
+                >
+              </div>
+            </div>
             <div class="meta-info">
               <template v-for="(item, index) in showMeta" :key="index">
                 <span>{{ item }}</span>
@@ -180,18 +192,14 @@ onMounted(async () => {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-size: cover;
-  background-position: center;
+  background-size: clamp(100%, calc(100% + (1200px - 100vw) * 0.02), 115%);
+  background-position: top center;
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;
   padding: 4.5rem 1rem 1rem;
   background-color: $color-background;
-
-  @include desktop {
-    background-size: cover;
-    background-position: top center;
-  }
+  transition: background-size 0.5s ease;
 
   &::before {
     content: '';
@@ -221,6 +229,11 @@ onMounted(async () => {
 
     @include phone {
       padding: 1rem;
+    }
+
+    @include desktop {
+      max-width: 1200px;
+      margin: 0 auto;
     }
   }
 
@@ -310,6 +323,37 @@ onMounted(async () => {
       @include phone {
         padding-bottom: 0;
         width: 100%;
+      }
+
+      .header-main-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+
+        @include phone {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .show-title {
+          margin: 0;
+        }
+
+        .rating-container {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          .tmdb-logo {
+            height: $font-size-xsm;
+          }
+
+          .rating {
+            font-size: $font-size-base;
+            font-weight: $font-weight-bold;
+          }
+        }
       }
 
       .show-title {
