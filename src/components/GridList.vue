@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Card from './CardItem.vue'
 import type { MappedShow } from '@/store/types'
+import { clearHTMLTags } from '@/utilities/helpers'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 
 const props = defineProps<{
@@ -94,7 +95,7 @@ onUnmounted(() => {
         >
           <Card
             :name="show.name"
-            :summary="show.summary"
+            :summary="clearHTMLTags(show.summary)"
             :image="show.image"
             :rating="show.rating"
             :year="show.year"
