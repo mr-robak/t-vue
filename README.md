@@ -78,6 +78,4 @@ In my dev environment I use node v20.18.0 and npm v10.8.2. Github workers use v1
 
 4. Project definitely needs more tests. I've prioritized to build a fully functional app first and then add tests. I focused on testing the most important parts of the app logic (modules, api, helpers), but there is still a lot of room for improvement.
 
-// line break in markdown
-
 [**Back to top**](#t-vue---tv-show-dashboard-extravaganza)
