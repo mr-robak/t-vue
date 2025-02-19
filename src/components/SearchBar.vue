@@ -48,7 +48,8 @@ watchEffect(() => {
 <style scoped lang="scss">
 .search-bar {
   width: 100%;
-  padding: 0.5rem 0 0 0.5rem;
+  padding-top: 0.5rem;
+  padding-inline: 0.5rem;
   display: flex;
   align-items: center;
   box-sizing: border-box;
