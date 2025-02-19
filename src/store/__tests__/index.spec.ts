@@ -21,8 +21,26 @@ describe('Store', () => {
     it('should set genres', () => {
       const store = useStore()
       const genres: GenresMap = {
-        drama: [{ id: 1, name: 'Show 1' }],
-        comedy: [{ id: 2, name: 'Show 2' }],
+        drama: [
+          {
+            id: 1,
+            name: 'Show 1',
+            image: '',
+            summary: '',
+            rating: 0,
+            year: '0',
+          },
+        ],
+        comedy: [
+          {
+            id: 2,
+            name: 'Show 2',
+            image: '',
+            summary: '',
+            rating: 0,
+            year: '0',
+          },
+        ],
       }
 
       store.setGenres(genres)
@@ -55,13 +73,49 @@ describe('Store', () => {
     it('should return shows by genre', () => {
       const store = useStore()
       const genres: GenresMap = {
-        drama: [{ id: 1, name: 'Show 1' }],
-        comedy: [{ id: 2, name: 'Show 2' }],
+        drama: [
+          {
+            id: 1,
+            name: 'Show 1',
+            image: '',
+            summary: '',
+            rating: 0,
+            year: '0',
+          },
+        ],
+        comedy: [
+          {
+            id: 2,
+            name: 'Show 2',
+            image: '',
+            summary: '',
+            rating: 0,
+            year: '0',
+          },
+        ],
       }
       store.setGenres(genres)
 
-      expect(store.showsByGenre('drama')).toEqual([{ id: 1, name: 'Show 1' }])
-      expect(store.showsByGenre('comedy')).toEqual([{ id: 2, name: 'Show 2' }])
+      expect(store.showsByGenre('drama')).toEqual([
+        {
+          id: 1,
+          name: 'Show 1',
+          image: '',
+          summary: '',
+          rating: 0,
+          year: '0',
+        },
+      ])
+      expect(store.showsByGenre('comedy')).toEqual([
+        {
+          id: 2,
+          name: 'Show 2',
+          image: '',
+          summary: '',
+          rating: 0,
+          year: '0',
+        },
+      ])
     })
 
     it('should return empty array for non-existent genre', () => {

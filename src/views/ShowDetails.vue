@@ -3,21 +3,50 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { fetchShowDetails } from '@/api'
 import { clearHTMLTags, formatYear } from '@/utilities/helpers'
-import type { ShowDetails } from '@/api/types'
 import BackButton from '@/components/BackButton.vue'
 import CardItem from '@/components/CardItem.vue'
 import AvatarImage from '@/components/AvatarImage.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import type { ShowDetails } from '../api/types'
 
 const route = useRoute()
 
 const show = ref<ShowDetails | null>(null)
 
+interface ShowImage {
+  type: string
+  resolutions?: {
+    original?: {
+      url: string
+    }
+  }
+}
+
+interface CastMember {
+  person: {
+    id: number
+    name: string
+    image?: {
+      medium?: string
+    } | null
+  }
+  character: {
+    name: string
+  }
+}
+
+interface MappedCastMember {
+  id: number
+  name: string
+  image: string | null
+  character: string
+}
+
 const backgroundImage = computed(() => {
   if (!show.value?._embedded?.images) return ''
 
   const backgroundImg = show.value._embedded.images.find(
-    (img) => img.type === 'background' || img.type === 'banner',
+    (img: ShowImage) => img.type === 'background' || img.type === 'banner',
   )
   return (
     backgroundImg?.resolutions?.original?.url ||
@@ -47,15 +76,17 @@ const showMeta = computed(() => {
   return meta
 })
 
-const mappedCast = computed(() => {
+const mappedCast = computed<MappedCastMember[]>(() => {
   if (!show.value?._embedded?.cast) return []
 
-  return show.value._embedded.cast.slice(0, 10).map((castMember) => ({
-    id: castMember.person.id,
-    name: castMember.person.name,
-    image: castMember.person.image?.medium || null,
-    character: castMember.character.name,
-  }))
+  return show.value._embedded.cast.slice(0, 10).map(
+    (castMember: CastMember): MappedCastMember => ({
+      id: castMember.person.id,
+      name: castMember.person.name,
+      image: castMember.person.image?.medium || null,
+      character: castMember.character.name,
+    }),
+  )
 })
 
 onMounted(async () => {

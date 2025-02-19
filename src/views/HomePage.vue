@@ -11,10 +11,10 @@ const genresEntries = computed(() => Object.entries(store.genres))
   <section>
     <main>
       <ScrollList
-        v-for="[genreName, ScrollList] in genresEntries"
+        v-for="[genreName, shows] in genresEntries"
         :key="genreName"
         :genre="genreName"
-        :shows="ScrollList"
+        :shows="shows"
         navigation
       />
     </main>

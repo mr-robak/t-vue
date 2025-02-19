@@ -8,11 +8,18 @@ vi.mock('@/utilities/helpers', () => ({
 }))
 
 describe('API', () => {
-  const createMockResponse = (data: unknown, status = 200) => ({
-    ok: true,
-    status,
-    json: () => Promise.resolve(data),
-  })
+  const createMockResponse = (data: unknown, status = 200) =>
+    ({
+      ok: true,
+      status,
+      statusText: 'OK',
+      headers: new Headers(),
+      redirected: false,
+      type: 'basic',
+      url: '',
+      bodyUsed: false,
+      json: () => Promise.resolve(data),
+    }) as unknown as Response
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -50,7 +57,7 @@ describe('API', () => {
     it('should handle pagination correctly', async () => {
       const page1 = [{ id: 1, name: 'Show 1' }]
       const page2 = [{ id: 2, name: 'Show 2' }]
-      const emptyPage = []
+      const emptyPage: { id: number; name: string }[] = []
 
       const mockResponses = [
         createMockResponse(page1),

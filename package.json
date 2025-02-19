@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "vitest"
+    "test": "vitest",
+    "deploy": "npm run build && npm run postbuild && gh-pages -d dist",
+    "postbuild": "cp dist/index.html dist/404.html"
   },
   "dependencies": {
     "@phosphor-icons/vue": "^2.2.1",
@@ -28,6 +30,7 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-vue": "^9.32.0",
+    "gh-pages": "^6.3.0",
     "globals": "^15.15.0",
     "jsdom": "^26.0.0",
     "prettier": "^3.5.1",

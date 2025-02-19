@@ -3,6 +3,7 @@ import { fetchAllShows } from '@/api'
 import { useStore } from '@/store'
 import type { Show } from '@/api/types'
 import { vi, describe, beforeEach, it, expect } from 'vitest'
+import type { MappedShow } from '@/store/types'
 
 vi.mock('@/api')
 vi.mock('@/store', () => ({
@@ -11,6 +12,12 @@ vi.mock('@/store', () => ({
 
 describe('showsModule', () => {
   const mockStore = {
+    $state: { genres: {} },
+    $patch: (patch: Partial<unknown>) => Object.assign(mockStore.$state, patch),
+    $reset: () => {
+      /* reset logic */
+    },
+    $subscribe: () => () => {},
     genres: {},
     setLoading: vi.fn(),
     setError: vi.fn(),
@@ -20,21 +27,61 @@ describe('showsModule', () => {
   const mockShows: Show[] = [
     {
       id: 1,
+      url: 'http://example.com/show1',
+      type: 'Scripted',
+      language: 'English',
       name: 'Show 1',
       genres: ['Drama', 'Comedy'],
-      rating: { average: 8.5 },
-      image: { medium: 'image1.jpg' },
-      summary: 'Summary 1',
+      status: 'Running',
+      runtime: 45,
       premiered: '2020-01-01',
+      officialSite: 'http://example.com',
+      schedule: { time: '20:00', days: ['Monday'] },
+      rating: { average: 8.5 },
+      weight: 100,
+      network: undefined,
+      webChannel: undefined,
+      dvdCountry: undefined,
+      image: { medium: 'image1.jpg', original: 'image1-original.jpg' },
+      summary: 'Summary 1',
+      updated: 0,
+      externals: { tvrage: undefined, thetvdb: undefined, imdb: undefined },
+      _links: {
+        self: { href: '' },
+        previousepisode: {
+          href: '',
+          name: '',
+        },
+      },
     },
     {
       id: 2,
+      url: 'http://example.com/show2',
+      type: 'Reality',
+      language: 'English',
       name: 'Show 2',
       genres: ['Comedy'],
+      status: 'Ended',
+      runtime: 30,
+      premiered: '2019-05-01',
+      officialSite: 'http://example.com/show2',
+      schedule: { time: '21:00', days: ['Tuesday'] },
       rating: { average: 9.0 },
-      image: null,
-      summary: null,
-      premiered: null,
+      weight: 80,
+      network: undefined,
+      webChannel: undefined,
+      dvdCountry: undefined,
+      image: undefined,
+      summary: undefined,
+      updated: 0,
+      externals: { tvrage: undefined, thetvdb: undefined, imdb: undefined },
+      _links: {
+        self: { href: '' },
+        previousepisode: {
+          href: '',
+          name: '',
+        },
+      },
     },
   ]
 
@@ -44,6 +91,7 @@ describe('showsModule', () => {
     mockStore.setLoading.mockClear()
     mockStore.setError.mockClear()
     mockStore.setGenres.mockClear()
+    // @ts-expect-error mock
     vi.mocked(useStore).mockReturnValue(mockStore)
     vi.mocked(fetchAllShows).mockResolvedValue(mockShows)
   })
@@ -69,7 +117,7 @@ describe('showsModule', () => {
 
     it('should handle errors appropriately', async () => {
       const error = new Error('API Error')
-      ;(fetchAllShows as jest.Mock).mockRejectedValue(error)
+      vi.mocked(fetchAllShows).mockRejectedValueOnce(error)
 
       await showsModule.fetchShows()
 
@@ -96,16 +144,37 @@ describe('showsModule', () => {
         image: null,
         summary: null,
         rating: 9.0,
-        year: null,
+        year: '2019',
       })
     })
   })
 
   describe('sortByRating', () => {
-    const shows = [
-      { id: 1, name: 'Show 1', rating: 8.5 },
-      { id: 2, name: 'Show 2', rating: 9.0 },
-      { id: 3, name: 'Show 3', rating: null },
+    const shows: MappedShow[] = [
+      {
+        id: 1,
+        name: 'Show 1',
+        rating: 8.5,
+        image: null,
+        summary: null,
+        year: null,
+      },
+      {
+        id: 2,
+        name: 'Show 2',
+        rating: 9.0,
+        image: null,
+        summary: null,
+        year: null,
+      },
+      {
+        id: 3,
+        name: 'Show 3',
+        rating: null,
+        image: null,
+        summary: null,
+        year: null,
+      },
     ]
 
     it('should sort shows by rating in descending order by default', () => {
