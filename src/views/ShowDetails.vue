@@ -117,22 +117,22 @@ onMounted(async () => {
           />
           <div class="show-header-content">
             <div class="header-main-info">
-              <h1 class="show-title">
-                {{ show.name }}
-                <span v-if="formattedAirDate" class="air-date">
-                  ({{ formattedAirDate }})
-                </span>
-              </h1>
               <div v-if="show.rating" class="rating-container">
                 <img
                   src="@/assets/images/tmdb-logo.svg"
                   alt="TMDB Logo"
                   class="tmdb-logo"
                 />
-                <span class="rating"
-                  >{{ Math.round((show.rating?.average || 0) * 10) }}%</span
-                >
+                <span class="rating">
+                  {{ Math.round((show.rating?.average || 0) * 10) }}%
+                </span>
               </div>
+              <h1 class="show-title">
+                {{ show.name }}
+                <span v-if="formattedAirDate" class="air-date">
+                  ({{ formattedAirDate }})
+                </span>
+              </h1>
             </div>
             <div class="meta-info">
               <template v-for="(item, index) in showMeta" :key="index">
@@ -190,16 +190,15 @@ onMounted(async () => {
 
 .show-details {
   position: relative;
-  min-height: 100vh;
   width: 100%;
-  background-size: clamp(100%, calc(100% + (1200px - 100vw) * 0.02), 115%);
-  background-position: top center;
-  background-repeat: no-repeat;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh;
   padding: 4.5rem 1rem 1rem;
   background-color: $color-background;
+  background-position: top center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   transition: background-size 0.5s ease;
+  background-size: clamp(100%, calc(100% + (1920px - 100vw) * 0.9), 300%);
 
   &::before {
     content: '';
@@ -224,8 +223,6 @@ onMounted(async () => {
     position: relative;
     z-index: 2;
     padding: 1.5rem;
-    margin-top: 1rem;
-    width: 100%;
 
     @include phone {
       padding: 1rem;
@@ -327,40 +324,36 @@ onMounted(async () => {
 
       .header-main-info {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
 
         @include phone {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .show-title {
-          margin: 0;
+          align-items: center;
+          text-align: center;
         }
 
         .rating-container {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          margin-bottom: 0.5rem;
 
           .tmdb-logo {
             height: $font-size-xsm;
           }
 
           .rating {
-            font-size: $font-size-base;
+            font-size: $font-size-sm;
             font-weight: $font-weight-bold;
           }
         }
       }
 
       .show-title {
+        margin: 0;
         color: $color-text-primary;
         font-size: $font-size-xlg;
         font-weight: $font-weight-bold;
-        margin: 0;
         line-height: 1.2;
 
         @include phone {
