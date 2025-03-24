@@ -25,6 +25,12 @@ async function fetchPage(page: number, retries = 0): Promise<Show[]> {
 
     return response.json()
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === 'Maximum retries exceeded'
+    ) {
+      throw error
+    }
     if (error instanceof Response) {
       throw error
     }
