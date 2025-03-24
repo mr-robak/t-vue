@@ -1,4 +1,4 @@
-import { fetchAllShows } from '@/api'
+import { streamShows } from '@/api'
 import { useStore } from '@/store'
 import type { Show } from '@/api/types'
 import type { GenresMap, MappedShow } from '@/store/types'
@@ -12,14 +12,13 @@ export const showsModule = {
     store.setError(null)
 
     try {
-      const shows = await fetchAllShows()
-      const genres = this.getGenresMap(shows)
+      for await (const batch of streamShows()) {
+        const genreMap = this.getGenresMap(batch)
 
-      for (const genre in genres) {
-        genres[genre] = this.sortByRating(genres[genre], 'desc')
+        for (const genre in genreMap) {
+          store.addShowsToGenre(genre, genreMap[genre])
+        }
       }
-
-      store.setGenres(genres)
     } catch (error) {
       store.setError(
         error instanceof Error ? error.message : 'Failed to fetch shows',
@@ -29,32 +28,26 @@ export const showsModule = {
     }
   },
   getGenresMap(shows: Show[]): GenresMap {
-    const genresMap: GenresMap = {}
+    const genresMap: { [key: string]: MappedShow[] } = {}
 
-    // TODO: improve by sorting in line here
+    shows.sort((a, b) => (b.rating.average || 0) - (a.rating.average || 0))
+
     shows.forEach((show) => {
+      const mappedShow = {
+        id: show.id,
+        name: show.name,
+        image: show.image?.medium || null,
+        summary: show.summary || null,
+        rating: show.rating.average || null,
+        year: show.premiered ? show.premiered.split('-')[0] : null,
+      }
+
       show.genres.forEach((genre) => {
         if (!genresMap[genre]) genresMap[genre] = []
-        genresMap[genre].push({
-          id: show.id,
-          name: show.name,
-          image: show.image?.medium || null,
-          summary: show.summary || null,
-          rating: show.rating.average || null,
-          year: show.premiered ? show.premiered.split('-')[0] : null,
-        })
+        genresMap[genre].push(mappedShow)
       })
     })
+
     return genresMap
-  },
-  sortByRating(
-    shows: MappedShow[],
-    direction: 'asc' | 'desc' = 'desc',
-  ): MappedShow[] {
-    return shows.sort((a, b) => {
-      return direction === 'asc'
-        ? (a.rating || 0) - (b.rating || 0)
-        : (b.rating || 0) - (a.rating || 0)
-    })
   },
 }

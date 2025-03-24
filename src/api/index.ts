@@ -2,74 +2,67 @@ import { sleep } from '@/utilities/helpers'
 import { API } from '@/assets/constants'
 import type { SearchResult, Show, ShowDetails } from './types'
 
-async function fetchPage(page: number, retries = 0): Promise<Show[]> {
-  try {
-    const response = await fetch(
-      `${API.BASE_URL}${API.ENDPOINTS.SHOWS}?page=${page}`,
-    )
+async function fetchPage(page: number, delay = 0): Promise<Show[]> {
+  if (delay) {
+    await sleep(delay)
+  }
 
-    if (response.status === 429) {
-      if (retries >= API.MAX_RETRIES) {
-        throw new Error('Maximum retries exceeded')
+  const response = await fetch(
+    `${API.BASE_URL}${API.ENDPOINTS.SHOWS}?page=${page}`,
+  )
+
+  if (response.status === 429) {
+    await sleep(API.RATE_LIMIT_DELAY)
+    return fetchPage(page, API.RATE_LIMIT_DELAY)
+  }
+
+  if (!response.ok) {
+    if (response.status === 404) return []
+    throw new Error(`Failed to fetch page ${page}: ${response.status}`)
+  }
+
+  return response.json()
+}
+
+export async function* streamShows(): AsyncGenerator<Show[], void, undefined> {
+  const INITIAL_BATCH_SIZE = 10
+  const MAX_CONCURRENT = 20
+  let currentPage = 0
+  let batchSize = INITIAL_BATCH_SIZE
+  let delay = 0
+
+  while (true) {
+    try {
+      const batch = Array.from(
+        { length: batchSize },
+        (_, i) => currentPage + i,
+      ).map((page) => fetchPage(page, delay))
+
+      const results = await Promise.all(batch)
+
+      if (results.some((shows) => shows.length === 0)) {
+        break
       }
-      await sleep(API.RATE_LIMIT_DELAY)
-      return fetchPage(page, retries + 1)
-    }
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return []
-      }
-      throw response
-    }
+      yield results.flat()
 
-    return response.json()
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message === 'Maximum retries exceeded'
-    ) {
-      throw error
+      currentPage += batchSize
+      batchSize = Math.min(batchSize + 5, MAX_CONCURRENT)
+      delay = 0
+    } catch (error) {
+      batchSize = Math.max(1, Math.floor(batchSize / 2))
+      delay = API.RATE_LIMIT_DELAY
+
+      continue
     }
-    if (error instanceof Response) {
-      throw error
-    }
-    throw new Error('Failed to fetch shows: an unknown error occurred')
   }
 }
 
 export async function fetchAllShows(): Promise<Show[]> {
-  const BATCH_SIZE = 3 // Adjust based on API rate limits
-  let currentPage = 0
-  let allShows: Show[] = []
-  let hasMore = true
-
-  while (hasMore) {
-    // Create a batch of promises
-    const batchPromises = Array.from({ length: BATCH_SIZE }, (_, index) =>
-      fetchPage(currentPage + index).catch((error) => {
-        if (error instanceof Response && error.status === 404) {
-          return []
-        }
-        throw error
-      }),
-    )
-
-    // Execute batch concurrently
-    const results = await Promise.all(batchPromises)
-
-    // Process results
-    for (const shows of results) {
-      if (shows.length === 0) {
-        hasMore = false
-        break
-      }
-      allShows = [...allShows, ...shows]
-    }
-
-    currentPage += BATCH_SIZE
+  const allShows: Show[] = []
+  for await (const batch of streamShows()) {
+    allShows.push(...batch)
   }
-
   return allShows
 }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { showsModule } from '@/modules/index'
 import SearchBar from '@/components/SearchBar.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
@@ -7,12 +7,11 @@ import { useStore } from './store'
 
 const store = useStore()
 
-onMounted(async () => {
-  try {
-    await showsModule.fetchShows()
-  } catch (error) {
-    console.error('Failed to fetch shows:', error)
-  }
+const hasContent = computed(() => Object.keys(store.genres).length > 0)
+const isInitialLoading = computed(() => store.isLoading && !hasContent.value)
+
+onMounted(() => {
+  showsModule.fetchShows()
 })
 </script>
 
@@ -22,8 +21,8 @@ onMounted(async () => {
       <SearchBar />
     </header>
     <main>
-      <LoadingSpinner v-if="store.isLoading" />
-      <router-view v-else class="main-component" />
+      <LoadingSpinner v-if="isInitialLoading" />
+      <router-view v-if="hasContent" class="main-component" />
     </main>
   </div>
 </template>
@@ -32,6 +31,9 @@ onMounted(async () => {
 header {
   width: 100%;
   padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .sticky-header {
@@ -40,7 +42,6 @@ header {
   left: 0;
   width: 100%;
   z-index: 100;
-
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
