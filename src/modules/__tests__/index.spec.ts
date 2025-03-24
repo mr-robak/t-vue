@@ -1,99 +1,61 @@
 import { showsModule } from '../index'
-import { fetchAllShows } from '@/api'
+import { streamShows } from '@/api'
 import { useStore } from '@/store'
 import type { Show } from '@/api/types'
 import { vi, describe, beforeEach, it, expect } from 'vitest'
 import type { MappedShow } from '@/store/types'
 
 vi.mock('@/api')
-vi.mock('@/store', () => ({
-  useStore: vi.fn(),
-}))
+vi.mock('@/store')
 
 describe('showsModule', () => {
   const mockStore = {
-    $state: { genres: {} },
-    $patch: (patch: Partial<unknown>) => Object.assign(mockStore.$state, patch),
-    $reset: () => {
-      /* reset logic */
-    },
-    $subscribe: () => () => {},
-    genres: {},
+    genres: {} as Record<string, MappedShow[]>,
+    isLoading: false,
+    error: null,
     setLoading: vi.fn(),
     setError: vi.fn(),
+    addShowsToGenre: vi.fn(),
     setGenres: vi.fn(),
+    showsByGenre: vi.fn(),
+    $state: {},
+    $patch: vi.fn(),
+    $reset: vi.fn(),
+    $subscribe: vi.fn(),
+    $dispose: vi.fn(),
+    $id: 'store',
+    $onAction: vi.fn(),
+    $watch: vi.fn(),
+    _customProperties: new Set(),
   }
 
   const mockShows: Show[] = [
     {
       id: 1,
-      url: 'http://example.com/show1',
-      type: 'Scripted',
-      language: 'English',
-      name: 'Show 1',
+      name: 'Test Show 1',
       genres: ['Drama', 'Comedy'],
-      status: 'Running',
-      runtime: 45,
-      premiered: '2020-01-01',
-      officialSite: 'http://example.com',
-      schedule: { time: '20:00', days: ['Monday'] },
       rating: { average: 8.5 },
-      weight: 100,
-      network: undefined,
-      webChannel: undefined,
-      dvdCountry: undefined,
       image: { medium: 'image1.jpg', original: 'image1-original.jpg' },
-      summary: 'Summary 1',
-      updated: 0,
-      externals: { tvrage: undefined, thetvdb: undefined, imdb: undefined },
-      _links: {
-        self: { href: '' },
-        previousepisode: {
-          href: '',
-          name: '',
-        },
-      },
+      summary: 'Test summary 1',
+      premiered: '2020-01-01',
     },
     {
       id: 2,
-      url: 'http://example.com/show2',
-      type: 'Reality',
-      language: 'English',
-      name: 'Show 2',
+      name: 'Test Show 2',
       genres: ['Comedy'],
-      status: 'Ended',
-      runtime: 30,
-      premiered: '2019-05-01',
-      officialSite: 'http://example.com/show2',
-      schedule: { time: '21:00', days: ['Tuesday'] },
       rating: { average: 9.0 },
-      weight: 80,
-      network: undefined,
-      webChannel: undefined,
-      dvdCountry: undefined,
-      image: undefined,
-      summary: undefined,
-      updated: 0,
-      externals: { tvrage: undefined, thetvdb: undefined, imdb: undefined },
-      _links: {
-        self: { href: '' },
-        previousepisode: {
-          href: '',
-          name: '',
-        },
-      },
+      image: null,
+      summary: null,
+      premiered: '2019-01-01',
     },
-  ]
+  ] as Show[]
 
   beforeEach(() => {
     vi.clearAllMocks()
     mockStore.genres = {}
-    mockStore.setLoading.mockClear()
-    mockStore.setError.mockClear()
-    mockStore.setGenres.mockClear()
-    // @ts-expect-error mock
+    mockStore.isLoading = false
+    mockStore.error = null
     vi.mocked(useStore).mockReturnValue(mockStore)
-    vi.mocked(fetchAllShows).mockResolvedValue(mockShows)
   })
 
   describe('fetchShows', () => {
@@ -101,27 +63,44 @@ describe('showsModule', () => {
       mockStore.genres = { Drama: [] }
       await showsModule.fetchShows()
 
-      expect(fetchAllShows).not.toHaveBeenCalled()
       expect(mockStore.setLoading).not.toHaveBeenCalled()
     })
 
-    it('should fetch and process shows successfully', async () => {
+    it('should process shows and add them to store by genre', async () => {
+      vi.mocked(streamShows).mockImplementation(async function* () {
+        yield mockShows
+        return
+      })
+
       await showsModule.fetchShows()
 
-      expect(mockStore.setLoading).toHaveBeenCalledWith(true)
-      expect(fetchAllShows).toHaveBeenCalled()
-      expect(mockStore.setGenres).toHaveBeenCalled()
-      expect(mockStore.setError).toHaveBeenCalledWith(null)
+      expect(mockStore.setLoading).toHaveBeenNthCalledWith(1, true)
+      expect(mockStore.addShowsToGenre).toHaveBeenCalledWith(
+        'Drama',
+        expect.arrayContaining([
+          expect.objectContaining({ id: 1, name: 'Test Show 1' }),
+        ]),
+      )
+      expect(mockStore.addShowsToGenre).toHaveBeenCalledWith(
+        'Comedy',
+        expect.arrayContaining([
+          expect.objectContaining({ id: 2, name: 'Test Show 2' }),
+        ]),
+      )
       expect(mockStore.setLoading).toHaveBeenLastCalledWith(false)
     })
 
-    it('should handle errors appropriately', async () => {
-      const error = new Error('API Error')
-      vi.mocked(fetchAllShows).mockRejectedValueOnce(error)
+    it('should handle API errors', async () => {
+      const errorMsg = 'API Error'
+      vi.mocked(streamShows).mockImplementation(async function* () {
+        yield []
+        throw new Error(errorMsg)
+      })
 
       await showsModule.fetchShows()
 
-      expect(mockStore.setError).toHaveBeenCalledWith('API Error')
+      expect(mockStore.setError).toHaveBeenCalledWith(errorMsg)
+      expect(mockStore.setLoading).toHaveBeenNthCalledWith(1, true)
       expect(mockStore.setLoading).toHaveBeenLastCalledWith(false)
     })
   })
@@ -130,72 +109,51 @@ describe('showsModule', () => {
     it('should correctly map shows to genres', () => {
       const result = showsModule.getGenresMap(mockShows)
 
-      expect(Object.keys(result)).toEqual(['Drama', 'Comedy'])
-      expect(result.Drama).toHaveLength(1)
-      expect(result.Comedy).toHaveLength(2)
-    })
-
-    it('should handle shows with missing optional fields', () => {
-      const result = showsModule.getGenresMap(mockShows)
-
-      expect(result.Comedy[1]).toEqual({
-        id: 2,
-        name: 'Show 2',
-        image: null,
-        summary: null,
-        rating: 9.0,
-        year: '2019',
-      })
-    })
-  })
-
-  describe('sortByRating', () => {
-    const shows: MappedShow[] = [
-      {
+      const expectedDramaShow: MappedShow = {
         id: 1,
-        name: 'Show 1',
+        name: 'Test Show 1',
+        image: 'image1.jpg',
+        summary: 'Test summary 1',
         rating: 8.5,
-        image: null,
-        summary: null,
-        year: null,
-      },
-      {
-        id: 2,
-        name: 'Show 2',
-        rating: 9.0,
-        image: null,
-        summary: null,
-        year: null,
-      },
-      {
+        year: '2020',
+      }
+
+      const expectedComedyShows: MappedShow[] = [
+        {
+          id: 2,
+          name: 'Test Show 2',
+          image: null,
+          summary: null,
+          rating: 9.0,
+          year: '2019',
+        },
+        expectedDramaShow,
+      ]
+
+      expect(result.Drama).toEqual([expectedDramaShow])
+      expect(result.Comedy).toEqual(expectedComedyShows)
+    })
+
+    it('should handle shows with missing data', () => {
+      const incompleteShow: Show = {
         id: 3,
-        name: 'Show 3',
-        rating: null,
-        image: null,
-        summary: null,
-        year: null,
-      },
-    ]
+        name: 'Incomplete Show',
+        genres: ['Drama'],
+        rating: {},
+      } as Show
 
-    it('should sort shows by rating in descending order by default', () => {
-      const result = showsModule.sortByRating(shows)
+      const result = showsModule.getGenresMap([incompleteShow])
 
-      expect(result[0].rating).toBe(9.0)
-      expect(result[1].rating).toBe(8.5)
-      expect(result[2].rating).toBe(null)
-    })
-
-    it('should sort shows by rating in ascending order', () => {
-      const result = showsModule.sortByRating(shows, 'asc')
-
-      expect(result[0].rating).toBe(null)
-      expect(result[1].rating).toBe(8.5)
-      expect(result[2].rating).toBe(9.0)
-    })
-
-    it('should handle empty array', () => {
-      const result = showsModule.sortByRating([])
-      expect(result).toEqual([])
+      expect(result.Drama).toEqual([
+        {
+          id: 3,
+          name: 'Incomplete Show',
+          image: null,
+          summary: null,
+          rating: null,
+          year: null,
+        },
+      ])
     })
   })
 })

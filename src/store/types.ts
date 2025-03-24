@@ -1,9 +1,3 @@
-export interface StoreState {
-  genres: GenresMap
-  isLoading: boolean
-  error: string | null
-}
-
 export interface MappedShow {
   id: number
   name: string
@@ -13,4 +7,12 @@ export interface MappedShow {
   year: string | null
 }
 
-export type GenresMap = Record<string, MappedShow[]>
+export interface GenresMap {
+  [key: string]: MappedShow[]
+}
+
+export interface StoreState {
+  genres: GenresMap
+  isLoading: boolean
+  error: string | null
+}

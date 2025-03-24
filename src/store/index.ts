@@ -66,7 +66,12 @@ export const useStore = defineStore('store', {
   },
   getters: {
     showsByGenre: (state) => {
-      return (genre: string) => state.genres[genre] || []
+      return (genre: string) => {
+        const normalizedGenre = Object.keys(state.genres).find(
+          (key) => key.toLowerCase() === genre.toLowerCase(),
+        )
+        return normalizedGenre ? state.genres[normalizedGenre] : []
+      }
     },
   },
 })
