@@ -33,32 +33,38 @@ async function fetchPage(page: number, retries = 0): Promise<Show[]> {
 }
 
 export async function fetchAllShows(): Promise<Show[]> {
-  let page = 0
-  let shows: Show[] = []
+  const BATCH_SIZE = 3 // Adjust based on API rate limits
+  let currentPage = 0
+  let allShows: Show[] = []
   let hasMore = true
 
   while (hasMore) {
-    try {
-      const data = await fetchPage(page)
+    // Create a batch of promises
+    const batchPromises = Array.from({ length: BATCH_SIZE }, (_, index) =>
+      fetchPage(currentPage + index).catch((error) => {
+        if (error instanceof Response && error.status === 404) {
+          return []
+        }
+        throw error
+      }),
+    )
 
-      if (data.length === 0) {
+    // Execute batch concurrently
+    const results = await Promise.all(batchPromises)
+
+    // Process results
+    for (const shows of results) {
+      if (shows.length === 0) {
         hasMore = false
-      } else {
-        shows = [...shows, ...data]
-        page++
+        break
       }
-    } catch (error) {
-      if (error instanceof Response && error.status === 404) {
-        return shows
-      }
-
-      throw error instanceof Error
-        ? error
-        : new Error('Failed to fetch shows: an unknown error occurred')
+      allShows = [...allShows, ...shows]
     }
+
+    currentPage += BATCH_SIZE
   }
 
-  return shows
+  return allShows
 }
 
 export async function fetchShowDetails(id: number): Promise<ShowDetails> {
