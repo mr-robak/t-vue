@@ -50,10 +50,9 @@ export async function* streamShows(): AsyncGenerator<Show[], void, undefined> {
       batchSize = Math.min(batchSize + 5, MAX_CONCURRENT)
       delay = 0
     } catch (error) {
+      console.error('Error fetching batch in streamShows, retrying:', error)
       batchSize = Math.max(1, Math.floor(batchSize / 2))
       delay = API.RATE_LIMIT_DELAY
-
-      continue
     }
   }
 }
