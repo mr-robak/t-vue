@@ -18,15 +18,19 @@ describe('showsModule', () => {
     addShowsToGenre: vi.fn(),
     setGenres: vi.fn(),
     showsByGenre: vi.fn(),
-    $state: {},
+    $state: {
+      genres: {},
+      isLoading: false,
+      error: null,
+    },
     $patch: vi.fn(),
     $reset: vi.fn(),
     $subscribe: vi.fn(),
     $dispose: vi.fn(),
-    $id: 'store',
+    $id: 'store' as const,
     $onAction: vi.fn(),
     $watch: vi.fn(),
-    _customProperties: new Set(),
+    _customProperties: new Set<string>(),
   }
 
   const mockShows: Show[] = [
@@ -55,6 +59,9 @@ describe('showsModule', () => {
     mockStore.genres = {}
     mockStore.isLoading = false
     mockStore.error = null
+    mockStore.$state.genres = {}
+    mockStore.$state.isLoading = false
+    mockStore.$state.error = null
     vi.mocked(useStore).mockReturnValue(mockStore)
   })
 

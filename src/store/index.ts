@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { StoreState, GenresMap } from './types'
+import type { StoreState, GenresMap, MappedShow } from './types'
 
 export const useStore = defineStore('store', {
   state: (): StoreState => ({
