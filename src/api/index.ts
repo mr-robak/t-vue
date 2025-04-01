@@ -2,9 +2,19 @@ import { sleep } from '@/utilities/helpers'
 import { API } from '@/assets/constants'
 import type { SearchResult, Show, ShowDetails } from './types'
 
-async function fetchPage(page: number, delay = 0): Promise<Show[]> {
+async function fetchPage(
+  page: number,
+  delay = 0,
+  retryCount = 0,
+): Promise<Show[]> {
   if (delay) {
     await sleep(delay)
+  }
+
+  if (retryCount >= API.MAX_RETRIES) {
+    throw new Error(
+      `Maximum retry count (${API.MAX_RETRIES}) exceeded for page ${page}`,
+    )
   }
 
   const response = await fetch(
@@ -13,7 +23,7 @@ async function fetchPage(page: number, delay = 0): Promise<Show[]> {
 
   if (response.status === 429) {
     await sleep(API.RATE_LIMIT_DELAY)
-    return fetchPage(page, API.RATE_LIMIT_DELAY)
+    return fetchPage(page, API.RATE_LIMIT_DELAY, retryCount + 1)
   }
 
   if (!response.ok) {
@@ -24,14 +34,18 @@ async function fetchPage(page: number, delay = 0): Promise<Show[]> {
   return response.json()
 }
 
-export async function* streamShows(): AsyncGenerator<Show[], void, undefined> {
+export async function* streamShows(
+  maxPages?: number,
+): AsyncGenerator<Show[], void, undefined> {
   const INITIAL_BATCH_SIZE = 10
   const MAX_CONCURRENT = 20
   let currentPage = 0
   let batchSize = INITIAL_BATCH_SIZE
   let delay = 0
+  let retryCount = 0
+  let totalPagesProcessed = 0
 
-  while (true) {
+  while (maxPages === undefined || totalPagesProcessed < maxPages) {
     try {
       const batch = Array.from(
         { length: batchSize },
@@ -46,13 +60,21 @@ export async function* streamShows(): AsyncGenerator<Show[], void, undefined> {
 
       yield results.flat()
 
+      totalPagesProcessed += batchSize
       currentPage += batchSize
       batchSize = Math.min(batchSize + 5, MAX_CONCURRENT)
       delay = 0
+      retryCount = 0
     } catch (error) {
       console.error('Error fetching batch in streamShows, retrying:', error)
+      if (retryCount >= API.MAX_RETRIES) {
+        throw new Error(
+          `Maximum retry count (${API.MAX_RETRIES}) exceeded in streamShows`,
+        )
+      }
       batchSize = Math.max(1, Math.floor(batchSize / 2))
       delay = API.RATE_LIMIT_DELAY
+      retryCount++
     }
   }
 }
